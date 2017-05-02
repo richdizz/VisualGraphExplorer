@@ -1,0 +1,20 @@
+{
+  "name": "visualgraphexplorer",
+  "version": "1.0.0",
+  "description": "Visual Graph Explorer is a simple application for graphically visualizing data from the Microsoft Graph.",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Richard diZerega",
+  "license": "MIT",
+  "dependencies": {
+    "angular": "1.6.4",
+    "angular-route": "1.6.4",
+    "d3": "3.5.3",
+    "kurvejs": "0.6.1"
+  },
+  "devDependencies": {
+    "superstatic": "4.1.0"
+  }
+}

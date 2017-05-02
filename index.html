@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="vge.app">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Visual Graph Explorer</title>
+    <link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+    <div class="spinner" ng-controller="appCtrl" ng-show="showSpinner">
+        <div class="spinnerContent">spinner here</div>
+        <div class="spinnerBackground"></div>
+    </div>
+    <div id="divCanvas" ng-view></div>
+    <script src="node_modules/kurvejs/dist/kurve.js"></script>
+    <script src="node_modules/angular/angular.min.js"></script>
+    <script src="node_modules/angular-route/angular-route.min.js"></script>
+    <script src="node_modules/d3/d3.min.js"></script>
+    
+    <script src="scripts/services.js"></script>
+    <script src="scripts/controllers.js"></script>
+    <script src="scripts/app.js"></script>
+</body>
+</html>

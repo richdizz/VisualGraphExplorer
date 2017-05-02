@@ -1,0 +1,42 @@
+body {
+    color: #fff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#divCanvas {
+    position: absolute;
+    background-color: #333;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    z-index: 500;
+}
+
+.spinner {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    z-index: 1000;
+}
+
+.spinnerContent {
+    position: absolute;
+    width: 100px;
+    text-align: center;
+    top: 50%;
+    left: 50%;
+    margin-left: -50px;
+}
+
+.spinnerBackgroup {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    background-color: #000;
+    opacity: .25;
+}
