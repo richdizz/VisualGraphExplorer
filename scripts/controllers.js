@@ -351,16 +351,48 @@
                                 vgeService.wait(false); 
                                 break;
                             case "directs":
-                                //TODO
-                                // update the visual and stop spinner
-                                updateVisual(currentData);
-                                vgeService.wait(false); 
+                                // query for directs
+                                vgeService.directs(currentData.id).then(function(directResult) {
+                                    for (var i = 0; i < directResult.value.length; i++) {
+                                        var newNode = { id: directResult.value[i].id, text: directResult.value[i].displayName, type: "directs", pic: "/images/04directs.png", children: [], hide: false };
+                                        currentData.children.push(newNode);
+
+                                        // get photo for the user
+                                        vgeService.photo(directResult.value[i].id, "users", newNode).then(function(photoResults) {
+                                            photoResults.node.pic = photoResults.pic;
+                                            document.getElementById(photoResults.node.code).children[0].setAttribute("href", photoResults.node.pic);
+                                            document.getElementById(photoResults.node.code + "_c").setAttribute("fill", "url(#" + photoResults.node.code + ")");
+                                        });
+                                    }
+
+                                    // update the visual and stop spinner
+                                    updateVisual(currentData);
+                                    vgeService.wait(false);
+                                });
                                 break;
                             case "manager":
-                                //TODO
-                                // update the visual and stop spinner
-                                updateVisual(currentData);
-                                vgeService.wait(false); 
+                                // query for manager
+                                vgeService.manager(currentData.id).then(function(managerResult) {
+                                    // check if we got a manager
+                                    if (managerResult == null)
+                                    {
+                                        return;
+                                    }
+
+                                    var newNode = { id: managerResult.id, text: managerResult.displayName, type: "manager", pic: "/images/05manager.png", children: [], hide: false };
+                                    currentData.children.push(newNode);
+
+                                    // get photo for the user
+                                    vgeService.photo(managerResult.id, "users", newNode).then(function(photoResults) {
+                                        photoResults.node.pic = photoResults.pic;
+                                        document.getElementById(photoResults.node.code).children[0].setAttribute("href", photoResults.node.pic);
+                                        document.getElementById(photoResults.node.code + "_c").setAttribute("fill", "url(#" + photoResults.node.code + ")");
+                                    });
+
+                                    // update the visual and stop spinner
+                                    updateVisual(currentData);
+                                    vgeService.wait(false);
+                                });
                                 break;
                             case "files":
                                 // query for files
@@ -386,34 +418,69 @@
                                 });
                                 break;
                             case "trending":
-                                //TODO
-                                // update the visual and stop spinner
-                                updateVisual(currentData);
-                                vgeService.wait(false); 
+                                // query for trending
+                                vgeService.trending(currentData.id).then(function(trendingResult) {
+                                    for (var i = 0; i < trendingResult.value.length; i++) {
+                                        var newNode = { id: trendingResult.value[i].id, text: trendingResult.value[i].displayName, type: "trending", pic: "/images/07trending.png", children: [], hide: false };
+                                        currentData.children.push(newNode);
+                                    }
+
+                                    // update the visual and stop spinner
+                                    updateVisual(currentData);
+                                    vgeService.wait(false);
+                                });
                                 break;
                             case "messages":
-                                //TODO
-                                // update the visual and stop spinner
-                                updateVisual(currentData);
-                                vgeService.wait(false); 
+                                // query for messages
+                                vgeService.messages(currentData.id).then(function(messageResult) {
+                                    for (var i = 0; i < messageResult.value.length; i++) {
+                                        var newNode = { id: messageResult.value[i].id, text: messageResult.value[i].displayName, type: "messages", pic: "/images/08messages.png", children: [], hide: false };
+                                        currentData.children.push(newNode);
+                                    }
+
+                                    // update the visual and stop spinner
+                                    updateVisual(currentData);
+                                    vgeService.wait(false);
+                                });
                                 break;
                             case "events":
-                                //TODO
-                                // update the visual and stop spinner
-                                updateVisual(currentData);
-                                vgeService.wait(false); 
+                                // query for events
+                                vgeService.events(currentData.id).then(function(eventResult) {
+                                    for (var i = 0; i < eventResult.value.length; i++) {
+                                        var newNode = { id: eventResult.value[i].id, text: eventResult.value[i].displayName, type: "events", pic: "/images/09events.png", children: [], hide: false };
+                                        currentData.children.push(newNode);
+                                    }
+
+                                    // update the visual and stop spinner
+                                    updateVisual(currentData);
+                                    vgeService.wait(false);
+                                });
                                 break;
                             case "contacts":
-                                //TODO
-                                // update the visual and stop spinner
-                                updateVisual(currentData);
-                                vgeService.wait(false); 
+                                // query for contacts
+                                vgeService.contacts(currentData.id).then(function(contactResult) {
+                                    for (var i = 0; i < contactResult.value.length; i++) {
+                                        var newNode = { id: contactResult.value[i].id, text: contactResult.value[i].displayName, type: "contacts", pic: "/images/10contacts.png", children: [], hide: false };
+                                        currentData.children.push(newNode);
+                                    }
+
+                                    // update the visual and stop spinner
+                                    updateVisual(currentData);
+                                    vgeService.wait(false);
+                                });
                                 break;
                             case "notes":
-                                //TODO
-                                // update the visual and stop spinner
-                                updateVisual(currentData);
-                                vgeService.wait(false); 
+                                // query for notes
+                                vgeService.notes(currentData.id).then(function(noteResult) {
+                                    for (var i = 0; i < noteResult.value.length; i++) {
+                                        var newNode = { id: noteResult.value[i].id, text: noteResult.value[i].displayName, type: "notes", pic: "/images/11notes.png", children: [], hide: false };
+                                        currentData.children.push(newNode);
+                                    }
+
+                                    // update the visual and stop spinner
+                                    updateVisual(currentData);
+                                    vgeService.wait(false);
+                                });
                                 break;
                             case "plans":
                                 //TODO
