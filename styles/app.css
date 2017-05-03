@@ -3,12 +3,38 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+#header {
+    position: absolute;
+    height: 39px;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    background-color: #111;
+    border-bottom: 1px solid #BAD80A;
+}
+
+#header .icon {
+    width: 24px;
+    height: 24px;
+    display: block;
+    background-color: #BAD80A;
+    margin: 7px;
+    float: left;
+}
+
+#header h1 {
+    font-size: 20px;
+    margin-top: 6px;
+    margin-left: 2px;
+    float: left;
+}
+
 #divCanvas {
     position: absolute;
     background-color: #333;
     left: 0px;
     right: 0px;
-    top: 0px;
+    top: 40px;
     bottom: 0px;
     z-index: 500;
 }
@@ -31,12 +57,152 @@ body {
     margin-left: -50px;
 }
 
-.spinnerBackgroup {
+.spinnerMask {
     position: absolute;
     left: 0px;
     right: 0px;
     top: 0px;
     bottom: 0px;
     background-color: #000;
-    opacity: .25;
+    opacity: .5;
+}
+
+#menu {
+    position: absolute;
+    width: 320px;
+    right: -290px;
+    top: 0px;
+    bottom: 0px;
+    background: #111;
+    -webkit-transition: right .5s; /* Safari */
+    transition: right .5s;
+}
+
+#menu.show {
+    right: 0px;
+}
+
+#menuLauncher {
+    position: absolute;
+    width: 30px;
+    left: 0px;
+    top: 0px;
+    bottom: 0px;
+    background: #555;
+    border-left: 1px solid #111;
+    cursor: pointer;
+}
+
+#menuLauncher:hover {
+    background: #666;
+}
+
+#menuContent {
+    position: absolute;
+    width: 290px;
+    left: 30px;
+    top: 0px;
+    bottom: 0px;
+    background: #333;
+    border-left: 1px solid #111;
+    padding: 10px;
+}
+
+#legend {
+
+}
+
+.switch {
+  /* frame */
+  background: #fff;
+  border: 1px solid #BAD80A;
+  width: 42px;
+  height: 20px;
+  border-radius: 10px;
+}
+.switch small {
+  /* button */
+  height: 18px;
+  width: 18px;
+  border: 1px solid #666
+}
+.switch.checked {
+  /* frame when enabled */
+  background: #BAD80A;
+  border-color: #fff;
+}
+.switch.checked small {
+  /* button when enabled */
+  left: 22px;
+}
+
+#menuContent h2 {
+    font-size: 18px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.filterItem {
+    width: 100%;
+    float: left;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    font-size: 14px;
+}
+
+.switchContainer {
+    float: left;
+    width: 70px;
+    display: block;
+}
+
+.textContainer {
+    float: left;
+    padding-left: 10px;
+    width: 210px;
+    display: block;
+}
+
+.loginContainer {
+    position: absolute;
+    z-index: 1100;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+}
+
+.loginContainer .loginModal {
+    position: absolute;
+    z-index: 1200;
+    width: 320px;
+    height: 200px;
+    top: 50%;
+    left: 50%;
+    margin-left: -160px;
+    margin-top: -100px;
+    border: 1px solid #BAD80A;
+    background: #333;
+    padding: 20px;
+}
+
+.loginContainer .loginModal button {
+    width: 100%;
+    border-radius: 0px;
+    padding: 10px;
+    font-size: 14px;
+    background-color: #BAD80A;
+    color: #fff;
+    border: 1px solid #fff;
+}
+
+.loginContainer .loginMask {
+    position: absolute;
+    z-index: 1100;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    background: #000;
+    opacity: 0.5;
 }

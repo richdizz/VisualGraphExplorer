@@ -1,3 +1,13 @@
-<button ng-click="test()">
-    Click me
-</button>
+<div id="menu" ng-class="{ 'show': showMenu }">
+    <div id="menuLauncher" ng-click="toggleMenu()">
+    </div>
+    <div id="menuContent">
+        <h2>Filter Options</h2>
+        <div class="filter">
+            <div ng-repeat="item in typeColors | filter:{ enabled: true }" class="filterItem">
+                <div class="textContainer">Show {{item.text}}</div>
+                <div class="switchContainer"><switch ng-model="item.show" ng-change="toggleFilter(item)"></switch></div>
+            </div>
+        </div>
+    </div>
+</div>

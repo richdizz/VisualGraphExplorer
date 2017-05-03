@@ -10,7 +10,7 @@
 
         var appConfig = {
             clientID: "a6745379-072d-4656-9247-9b4f69982b17",
-            scopes: ["user.read", "mail.send"],
+            scopes: [ "user.read.all", "calendars.read.shared", "contacts.read.shared", "files.read.all", "mail.read.shared", "group.read.all" ],
             redirectUri: "http://localhost:3474/node_modules/kurvejs/dist/login.html",
             authority: "https://login.microsoftonline.com/common"
         };
@@ -47,7 +47,7 @@
         };
 
         // photo
-        vgeService.photo = function(id) {
+        vgeService.photo = function(id, node) {
             var deferred = $q.defer();
         
             vgeService.kurve.getAccessTokenForScopesAsync(appConfig.scopes).then(function(token) {
@@ -55,7 +55,7 @@
                     // Convert blob into image that app can display
                     var imgUrl = window.URL || window.webkitURL;
                     var blobUrl = imgUrl.createObjectURL(image.data);
-                    deferred.resolve(blobUrl);
+                    deferred.resolve({ pic: blobUrl, node: node });
                 }, function (err) {
                     deferred.reject(err);
                 });
@@ -73,6 +73,43 @@
             vgeService.kurve.getAccessTokenForScopesAsync(appConfig.scopes).then(function(token) {
                 $http.get("https://graph.microsoft.com/beta/users/" + id + "/people", { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
                     deferred.resolve(result.data);
+                }, function (err) {
+                    deferred.reject(err);
+                });
+            }, function(err) {
+                deferred.reject(err);
+            });
+        
+            return deferred.promise;
+        };
+
+        // files
+        vgeService.files = function(id) {
+            var deferred = $q.defer();
+        
+            vgeService.kurve.getAccessTokenForScopesAsync(appConfig.scopes).then(function(token) {
+                $http.get("https://graph.microsoft.com/beta/users/" + id + "/drive/root/children", { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
+                    deferred.resolve(result.data);
+                }, function (err) {
+                    deferred.reject(err);
+                });
+            }, function(err) {
+                deferred.reject(err);
+            });
+        
+            return deferred.promise;
+        };
+
+        // thumbnail
+        vgeService.thumbnail = function(userid, fileid, node) {
+            var deferred = $q.defer();
+        
+            vgeService.kurve.getAccessTokenForScopesAsync(appConfig.scopes).then(function(token) {
+                $http.get("https://graph.microsoft.com/beta/users/" + userid + "/drive/items/" + fileid + "/thumbnails", { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
+                    if (result.data.value.length > 0)
+                        deferred.resolve({ pic: result.data.value[0].small.url, node: node });
+                    else
+                        deferred.resolve({ pic: "", node: node });
                 }, function (err) {
                     deferred.reject(err);
                 });

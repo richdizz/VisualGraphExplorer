@@ -23,28 +23,36 @@
         }
     }])
     .controller("visualCtrl", ["$scope", "$location", "vgeService", function($scope, $location, vgeService) {
-        var typeColors = [
-            { type: "me", text: "Me", color: "#BAD80A" },
-            { type: "people", text: "People", color: "#FFC800" },
-            { type: "directs", text: "Direct Reports", color: "#BAD80A" },
-            { type: "manager", text: "Manager", color: "#BAD80A" },
-            { type: "trending", text: "Trending", color: "#BAD80A" },
-            { type: "files", text: "Files", color: "#BAD80A" },
-            { type: "messages", text: "Messages", color: "#BAD80A" },
-            { type: "events", text: "Events", color: "#BAD80A" },
-            { type: "contacts", text: "Contacts", color: "#BAD80A" },
-            { type: "groups", text: "Groups", color: "#BAD80A" },
-            { type: "created", text: "Created By", color: "#BAD80A" },
-            { type: "modified", text: "Modified By", color: "#BAD80A" }
+        $scope.typeColors = [
+            { type: "me", text: "Me", color: "#BAD80A", show: true, enabled: false },
+            { type: "people", text: "People", color: "#FFC800", show: true, enabled: true },
+            { type: "directs", text: "Direct Reports", color: "#BAD80A", show: false, enabled: true },
+            { type: "manager", text: "Manager", color: "#BAD80A", show: false, enabled: true },
+            { type: "trending", text: "Trending", color: "#BAD80A", show: false, enabled: true },
+            { type: "files", text: "Files", color: "#990000", show: false, enabled: true },
+            { type: "messages", text: "Messages", color: "#BAD80A", show: false, enabled: true },
+            { type: "events", text: "Events", color: "#BAD80A", show: false, enabled: true },
+            { type: "contacts", text: "Contacts", color: "#BAD80A", show: false, enabled: true },
+            { type: "groups", text: "Groups", color: "#BAD80A", show: false, enabled: true },
+            { type: "created", text: "Created By", color: "#BAD80A", show: false, enabled: true },
+            { type: "modified", text: "Modified By", color: "#BAD80A", show: false, enabled: true }
             ///MORE HERE
         ];
+
+        // private function to get color based on the node type
         var getColor = function(type) {
-            for (var i = 0; i < typeColors.length; i++) {
-                if (typeColors[i].type === type)
-                    return typeColors[i].color;
+            for (var i = 0; i < $scope.typeColors.length; i++) {
+                if ($scope.typeColors[i].type === type)
+                    return $scope.typeColors[i].color;
             }
         };
-        
+
+        // toggle the menu
+        $scope.showMenu = false;
+        $scope.toggleMenu = function() {
+            $scope.showMenu = !$scope.showMenu;
+        };
+
         if (!vgeService.kurve.isLoggedIn())
             $location.path("/login");
         else {
@@ -114,20 +122,21 @@
                 node.enter().append('pattern')
                     .attr('id', function(d) { return d.code; })
                     .attr('class', 'imgPattern')
-                    .attr('height', 1)
-                    .attr('width', 1)
+                    .attr('height', function(d) { return d.radius * 2; })
+                    .attr('width', function(d) { return d.radius * 2; })
                     .attr('x', '0')
                     .attr('y', '0').append('image')
+                    .attr('height', function(d) { return d.radius * 2; })
+                    .attr('width', function(d) { return d.radius * 2; })
                     .attr('x', 0)
                     .attr('y', 0)
-                    .attr('height', function(d) { return (d.width >= d.height) ? (d.radius * 2) : (d.height / d.width) * (d.radius * 2); })
-                    .attr('width', function(d) { return (d.height >= d.width) ? (d.radius * 2) : (d.width / d.height) * (d.radius * 2); })
                     .attr('xlink:href', function (d) { return d.pic; });
             
                 //add the nodes
                 node.enter().append('circle')
+                    .attr('id', function(d) { return d.code + '_c'; })
+                    .attr('fill', function(d) { return (d.pic != '') ? 'url(#' + d.code + ')' : getColor(d.type); })
                     .attr('r', function(d) { return d.radius - 2; })
-                    .attr('fill', function (d) { return 'url(#' + d.code + ')'; })
                     .attr('stroke', function(d) { return getColor(d.type); })
                     .attr('stroke-width', '3px')
                     .style('cursor', 'default')
@@ -174,7 +183,8 @@
                 var nodes = [], i = 0;
 
                 function recurse(node) {
-                    node.code = getCacheCode();
+                    if (!node.code)
+                        node.code = getCacheCode();
                     if (node.children) 
                         node.size = node.children.reduce(function(p, v) {return p + recurse(v); }, 0);
                     if (!node.id) 
@@ -249,21 +259,67 @@
             vgeService.wait(true);
             currentData = {};
             vgeService.me().then(function(meResults) {
-                currentData = { text: meResults.displayName, type: "me", pic: "", children: [] };
+                currentData = { id: meResults.id, text: meResults.displayName, type: "me", pic: "", children: [], code: getCacheCode() };
 
-                // next get my photo and people
-                vgeService.photo(meResults.id).then(function(photoResults) {
-                    currentData.pic = photoResults;
-                });
+                // next get people
                 vgeService.people(meResults.id).then(function(peopleResults) {
+                    // add the people as children
                     for (var i = 0; i < peopleResults.value.length; i++) {
-                        currentData.children.push({ text: peopleResults.value[i].displayName, type: "people", pic: "", children: [] });
-                        //TODO: get photo
+                        var newNode = { id: peopleResults.value[i].id, text: peopleResults.value[i].displayName, type: "people", pic: "", children: [] };
+                        currentData.children.push(newNode);
+
+                        // get photo for the user
+                        vgeService.photo(peopleResults.value[i].id, newNode).then(function(photoResults) {
+                            photoResults.node.pic = photoResults.pic;
+                            document.getElementById(photoResults.node.code).children[0].setAttribute("href", photoResults.node.pic);
+                            document.getElementById(photoResults.node.code + "_c").setAttribute("fill", "url(#" + photoResults.node.code + ")");
+                        });
                     }
+                    
+                    // update the visual and stop spinner
                     updateVisual(currentData);
                     vgeService.wait(false);
+
+                    // get the photo for me
+                    vgeService.photo(meResults.id, currentData).then(function(photoResults) {
+                        photoResults.node.pic = photoResults.pic;
+                        document.getElementById(photoResults.node.code).children[0].setAttribute("href", photoResults.node.pic);
+                        document.getElementById(photoResults.node.code + "_c").setAttribute("fill", "url(#" + photoResults.node.code + ")");
+                    });
                 });
             });
+
+            // toggles
+            $scope.toggleFilter = function(filterItem) {
+                switch (filterItem.type) {
+                    case "files":
+                        if (filterItem.show) {
+                            vgeService.wait(true);
+
+                            // query for files
+                            vgeService.files(currentData.id).then(function(fileResults) {
+                                // add the people as children
+                                for (var i = 0; i < fileResults.value.length; i++) {
+                                    var newNode = { id: fileResults.value[i].id, text: fileResults.value[i].name, type: "files", pic: "", children: [] };
+                                    currentData.children.push(newNode);
+
+                                    // TODO: only get thumbnails for files
+                                    // get thumbnail for the file
+                                    vgeService.thumbnail(currentData.id, newNode.id, newNode).then(function(photoResults) {
+                                        photoResults.node.pic = photoResults.pic;
+                                        document.getElementById(photoResults.node.code).children[0].setAttribute("href", photoResults.node.pic);
+                                        document.getElementById(photoResults.node.code + "_c").setAttribute("fill", "url(#" + photoResults.node.code + ")");
+                                    });
+                                }
+
+                                // update the visual and stop spinner
+                                updateVisual(currentData);
+                                vgeService.wait(false);
+                            });
+                        }
+                        break;
+                }
+            };
         }
     }]);
 })();
