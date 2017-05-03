@@ -292,6 +292,27 @@
             return deferred.promise;
         };
 
+        // plans
+        vgeService.plansNextLink = 0;
+        vgeService.plans = function(id) {
+            var deferred = $q.defer();
+        
+            vgeService.kurve.getAccessTokenForScopesAsync(appConfig.scopes).then(function(token) {
+                $http.get("https://graph.microsoft.com/beta/groups/" + id + "/planner/plans", { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
+                    // if a next link is present, store it so that we can
+                    // get more data
+                    vgeService.plansNextLink = result.data['@odata.nextLink'];
+                    deferred.resolve(result.data);
+                }, function (err) {
+                    deferred.reject(err);
+                });
+            }, function(err) {
+                deferred.reject(err);
+            });
+        
+            return deferred.promise;
+        };
+
         return vgeService;
     }]);
 })();
