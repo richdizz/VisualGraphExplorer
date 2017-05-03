@@ -1,0 +1,12 @@
+me	#e81224
+groups	#f7630c
+people	#ffb900
+directs	#fce100
+manager	#bad80a
+files	#16c60c
+trending#00b7c3
+messages#0078d7
+events	#4f4bd9
+contacts#744da9
+notes	#881798
+plans	#e3008c

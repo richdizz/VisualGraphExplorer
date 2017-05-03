@@ -6,8 +6,15 @@
         <div class="filter">
             <div ng-repeat="item in typeColors | filter:{ enabled: true }" class="filterItem">
                 <div class="textContainer">Show {{item.text}}</div>
-                <div class="switchContainer"><switch ng-model="item.show" ng-change="toggleFilter(item)"></switch></div>
+                <div class="switchContainer"><switch ng-model="item.show" ng-style="{ 'border-color' : item.color, 'background': (item.show) ? item.color : '#fff' }" ng-change="toggleFilter(item)"></switch></div>
             </div>
         </div>
+    </div>
+</div>
+<div id="legend">
+    <h2>Legend</h2>
+    <div class="legendItem" ng-repeat="item in typeColors | filter:{ show: true }">
+        <div class="legendItemSwatch" ng-style="{ 'background-color' : item.color }"></div>
+        <div class="legendItemText">{{item.text}}</div>
     </div>
 </div>

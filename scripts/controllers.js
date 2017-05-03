@@ -24,18 +24,18 @@
     }])
     .controller("visualCtrl", ["$scope", "$location", "vgeService", function($scope, $location, vgeService) {
         $scope.typeColors = [
-            { type: "me", text: "Me", color: "#BAD80A", show: true, enabled: false },
-            { type: "people", text: "People", color: "#FFC800", show: true, enabled: true },
-            { type: "directs", text: "Direct Reports", color: "#BAD80A", show: false, enabled: true },
-            { type: "manager", text: "Manager", color: "#BAD80A", show: false, enabled: true },
-            { type: "trending", text: "Trending", color: "#BAD80A", show: false, enabled: true },
-            { type: "files", text: "Files", color: "#990000", show: false, enabled: true },
-            { type: "messages", text: "Messages", color: "#BAD80A", show: false, enabled: true },
-            { type: "events", text: "Events", color: "#BAD80A", show: false, enabled: true },
-            { type: "contacts", text: "Contacts", color: "#BAD80A", show: false, enabled: true },
-            { type: "groups", text: "Groups", color: "#BAD80A", show: false, enabled: true },
-            { type: "created", text: "Created By", color: "#BAD80A", show: false, enabled: true },
-            { type: "modified", text: "Modified By", color: "#BAD80A", show: false, enabled: true }
+            { type: "me", text: "Me", color: "#e81224", show: true, enabled: false, pic: "/images/01me.png" },
+            { type: "groups", text: "Groups", color: "#f7630c", show: false, enabled: true, pic: "/images/02groups.png" },
+            { type: "people", text: "People", color: "#ffb900", show: true, enabled: true, pic: "/images/03people.png" },
+            { type: "directs", text: "Direct Reports", color: "#fce100", show: false, enabled: true, pic: "/images/04directs.png" },
+            { type: "manager", text: "Manager", color: "#bad80a", show: false, enabled: true, pic: "/images/05manager.png" },
+            { type: "files", text: "Files", color: "#16c60c", show: false, enabled: true, pic: "/images/06files.png" },
+            { type: "trending", text: "Trending", color: "#00b7c3", show: false, enabled: true, pic: "/images/07trending.png" },
+            { type: "messages", text: "Messages", color: "#0078d7", show: false, enabled: true, pic: "/images/08messages.png" },
+            { type: "events", text: "Events", color: "#4f4bd9", show: false, enabled: true, pic: "/images/09events.png" },
+            { type: "contacts", text: "Contacts", color: "#744da9", show: false, enabled: true, pic: "/images/10contacts.png" },
+            { type: "notes", text: "Notes", color: "#881798", show: false, enabled: true, pic: "/images/11notes.png" },
+            { type: "plans", text: "Plans", color: "#e3008c", show: false, enabled: true, pic: "/images/12plans.png" }
             ///MORE HERE
         ];
 
@@ -53,6 +53,7 @@
             $scope.showMenu = !$scope.showMenu;
         };
 
+        // ensure the user is signed in
         if (!vgeService.kurve.isLoggedIn())
             $location.path("/login");
         else {
@@ -136,9 +137,9 @@
                 node.enter().append('circle')
                     .attr('id', function(d) { return d.code + '_c'; })
                     .attr('fill', function(d) { return (d.pic != '') ? 'url(#' + d.code + ')' : getColor(d.type); })
-                    .attr('r', function(d) { return d.radius - 2; })
+                    .attr('r', function(d) { return d.radius; })
                     .attr('stroke', function(d) { return getColor(d.type); })
-                    .attr('stroke-width', '3px')
+                    .attr('stroke-width', '2px')
                     .style('cursor', 'default')
                     .attr('class', 'node')
                     .on('click', function (d) {
@@ -189,7 +190,8 @@
                         node.size = node.children.reduce(function(p, v) {return p + recurse(v); }, 0);
                     if (!node.id) 
                         node.id = ++i;
-                    nodes.push(node);
+                    if (!node.hide)
+                        nodes.push(node);
                     return node.size;
                 }
 
@@ -255,21 +257,21 @@
             visual.attr('width', width).attr('height', height);
             force.size([width, height]);
 
-            // initialize visual using the graph
+            // initialize visual using the graph getting ME
             vgeService.wait(true);
             currentData = {};
             vgeService.me().then(function(meResults) {
-                currentData = { id: meResults.id, text: meResults.displayName, type: "me", pic: "", children: [], code: getCacheCode() };
+                currentData = { id: meResults.id, text: meResults.displayName, type: "me", pic: "/images/01me.png", children: [], code: getCacheCode(), loadStatus: { people: true }, hide: false };
 
                 // next get people
                 vgeService.people(meResults.id).then(function(peopleResults) {
-                    // add the people as children
+                    // add the people as children of root
                     for (var i = 0; i < peopleResults.value.length; i++) {
-                        var newNode = { id: peopleResults.value[i].id, text: peopleResults.value[i].displayName, type: "people", pic: "", children: [] };
+                        var newNode = { id: peopleResults.value[i].id, text: peopleResults.value[i].displayName, type: "people", pic: "/images/03people.png", children: [], hide: false };
                         currentData.children.push(newNode);
 
                         // get photo for the user
-                        vgeService.photo(peopleResults.value[i].id, newNode).then(function(photoResults) {
+                        vgeService.photo(peopleResults.value[i].id, "users", newNode).then(function(photoResults) {
                             photoResults.node.pic = photoResults.pic;
                             document.getElementById(photoResults.node.code).children[0].setAttribute("href", photoResults.node.pic);
                             document.getElementById(photoResults.node.code + "_c").setAttribute("fill", "url(#" + photoResults.node.code + ")");
@@ -281,7 +283,7 @@
                     vgeService.wait(false);
 
                     // get the photo for me
-                    vgeService.photo(meResults.id, currentData).then(function(photoResults) {
+                    vgeService.photo(meResults.id, "users", currentData).then(function(photoResults) {
                         photoResults.node.pic = photoResults.pic;
                         document.getElementById(photoResults.node.code).children[0].setAttribute("href", photoResults.node.pic);
                         document.getElementById(photoResults.node.code + "_c").setAttribute("fill", "url(#" + photoResults.node.code + ")");
@@ -291,33 +293,142 @@
 
             // toggles
             $scope.toggleFilter = function(filterItem) {
-                switch (filterItem.type) {
-                    case "files":
-                        if (filterItem.show) {
-                            vgeService.wait(true);
+                // start the spinner
+                vgeService.wait(true);
 
-                            // query for files
-                            vgeService.files(currentData.id).then(function(fileResults) {
-                                // add the people as children
-                                for (var i = 0; i < fileResults.value.length; i++) {
-                                    var newNode = { id: fileResults.value[i].id, text: fileResults.value[i].name, type: "files", pic: "", children: [] };
-                                    currentData.children.push(newNode);
+                // check which way to toggle the display
+                if (!filterItem.show) {
+                    // this type is already loaded but we want to hide them now
+                    for (var i = 0; i < currentData.children.length; i++) {
+                        if (currentData.children[i].type == filterItem.type)
+                            currentData.children[i].hide = true;
+                    }
 
-                                    // TODO: only get thumbnails for files
-                                    // get thumbnail for the file
-                                    vgeService.thumbnail(currentData.id, newNode.id, newNode).then(function(photoResults) {
-                                        photoResults.node.pic = photoResults.pic;
-                                        document.getElementById(photoResults.node.code).children[0].setAttribute("href", photoResults.node.pic);
-                                        document.getElementById(photoResults.node.code + "_c").setAttribute("fill", "url(#" + photoResults.node.code + ")");
-                                    });
-                                }
+                    // update the visual and stop spinner
+                    updateVisual(currentData);
+                    vgeService.wait(false);
+                }
+                else {
+                    // first check to see if loaded
+                    if (currentData.loadStatus[filterItem.type]) {
+                        // already loaded...loop through and toggle to show
+                        for (var i = 0; i < currentData.children.length; i++) {
+                            if (currentData.children[i].type == filterItem.type)
+                                currentData.children[i].hide = false;
+                        }
 
+                        // update the visual and stop spinner
+                        updateVisual(currentData);
+                        vgeService.wait(false);
+                    }
+                    else {
+                        // need to load and then mark loaded
+                        switch (filterItem.type) {
+                            case "groups":
+                                // query for files
+                                vgeService.groups(currentData.id).then(function(groupResults) {
+                                    for (var i = 0; i < groupResults.value.length; i++) {
+                                        var newNode = { id: groupResults.value[i].id, text: groupResults.value[i].name, type: "groups", pic: "/images/02groups.png", children: [], hide: false };
+                                        currentData.children.push(newNode);
+
+                                        // get the photo for the group
+                                        vgeService.photo(newNode.id, "groups", newNode).then(function(photoResults) {
+                                            photoResults.node.pic = photoResults.pic;
+                                            document.getElementById(photoResults.node.code).children[0].setAttribute("href", photoResults.node.pic);
+                                            document.getElementById(photoResults.node.code + "_c").setAttribute("fill", "url(#" + photoResults.node.code + ")");
+                                        });
+                                    }
+
+                                    // update the visual and stop spinner
+                                    updateVisual(currentData);
+                                    vgeService.wait(false);
+                                });
+                                break;
+                            case "people":
+                                //TODO
                                 // update the visual and stop spinner
                                 updateVisual(currentData);
-                                vgeService.wait(false);
-                            });
+                                vgeService.wait(false); 
+                                break;
+                            case "directs":
+                                //TODO
+                                // update the visual and stop spinner
+                                updateVisual(currentData);
+                                vgeService.wait(false); 
+                                break;
+                            case "manager":
+                                //TODO
+                                // update the visual and stop spinner
+                                updateVisual(currentData);
+                                vgeService.wait(false); 
+                                break;
+                            case "files":
+                                // query for files
+                                vgeService.files(currentData.id).then(function(fileResults) {
+                                    // add the people as children
+                                    for (var i = 0; i < fileResults.value.length; i++) {
+                                        var newNode = { id: fileResults.value[i].id, text: fileResults.value[i].name, type: "files", pic: "/images/06files.png", children: [], hide: false };
+                                        currentData.children.push(newNode);
+
+                                        // get thumbnail if this is a file
+                                        if (fileResults.value[i].file) {
+                                            vgeService.thumbnail(currentData.id, newNode.id, newNode).then(function(photoResults) {
+                                                photoResults.node.pic = photoResults.pic;
+                                                document.getElementById(photoResults.node.code).children[0].setAttribute("href", photoResults.node.pic);
+                                                document.getElementById(photoResults.node.code + "_c").setAttribute("fill", "url(#" + photoResults.node.code + ")");
+                                            });
+                                        }
+                                    }   
+
+                                    // update the visual and stop spinner
+                                    updateVisual(currentData);
+                                    vgeService.wait(false);     
+                                });
+                                break;
+                            case "trending":
+                                //TODO
+                                // update the visual and stop spinner
+                                updateVisual(currentData);
+                                vgeService.wait(false); 
+                                break;
+                            case "messages":
+                                //TODO
+                                // update the visual and stop spinner
+                                updateVisual(currentData);
+                                vgeService.wait(false); 
+                                break;
+                            case "events":
+                                //TODO
+                                // update the visual and stop spinner
+                                updateVisual(currentData);
+                                vgeService.wait(false); 
+                                break;
+                            case "contacts":
+                                //TODO
+                                // update the visual and stop spinner
+                                updateVisual(currentData);
+                                vgeService.wait(false); 
+                                break;
+                            case "notes":
+                                //TODO
+                                // update the visual and stop spinner
+                                updateVisual(currentData);
+                                vgeService.wait(false); 
+                                break;
+                            case "plans":
+                                //TODO
+                                // update the visual and stop spinner
+                                updateVisual(currentData);
+                                vgeService.wait(false); 
+                                break;
                         }
-                        break;
+
+
+
+
+
+
+                    }
                 }
             };
         }

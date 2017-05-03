@@ -109,13 +109,42 @@ body {
 }
 
 #legend {
+    position: absolute;
+    left: 20px;
+    width: 150px;
+    top: 50px;
+    background-color: #111;
+    border: 1px solid #BAD80A;
+    padding: 10px;
+}
 
+#legend H2 {
+    font-size: 18px;
+    margin-top: 2px;
+    margin-bottom: 8px;
+}
+
+.legendItem {
+    width: 100%;
+    float: left;
+    display: block;
+    padding-bottom: 5px;
+}
+
+.legendItem .legendItemSwatch {
+    float: left;
+    width: 18px;
+    height: 18px;
+}
+
+.legendItem .legendItemText {
+    float: left;
+    width: 112px;
+    padding-left: 10px;
 }
 
 .switch {
   /* frame */
-  background: #fff;
-  border: 1px solid #BAD80A;
   width: 42px;
   height: 20px;
   border-radius: 10px;
@@ -128,7 +157,6 @@ body {
 }
 .switch.checked {
   /* frame when enabled */
-  background: #BAD80A;
   border-color: #fff;
 }
 .switch.checked small {

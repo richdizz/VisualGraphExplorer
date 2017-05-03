@@ -47,11 +47,11 @@
         };
 
         // photo
-        vgeService.photo = function(id, node) {
+        vgeService.photo = function(id, type, node) {
             var deferred = $q.defer();
         
             vgeService.kurve.getAccessTokenForScopesAsync(appConfig.scopes).then(function(token) {
-                $http.get("https://graph.microsoft.com/v1.0/users/" + id + "/photo/$value", { headers:  { "Authorization": "Bearer " + token }, responseType: "blob" }).then(function (image) {
+                $http.get("https://graph.microsoft.com/v1.0/" + type + "/" + id + "/photo/$value", { headers:  { "Authorization": "Bearer " + token }, responseType: "blob" }).then(function (image) {
                     // Convert blob into image that app can display
                     var imgUrl = window.URL || window.webkitURL;
                     var blobUrl = imgUrl.createObjectURL(image.data);
@@ -72,6 +72,23 @@
         
             vgeService.kurve.getAccessTokenForScopesAsync(appConfig.scopes).then(function(token) {
                 $http.get("https://graph.microsoft.com/beta/users/" + id + "/people", { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
+                    deferred.resolve(result.data);
+                }, function (err) {
+                    deferred.reject(err);
+                });
+            }, function(err) {
+                deferred.reject(err);
+            });
+        
+            return deferred.promise;
+        };
+
+        // groups
+        vgeService.groups = function(id) {
+            var deferred = $q.defer();
+        
+            vgeService.kurve.getAccessTokenForScopesAsync(appConfig.scopes).then(function(token) {
+                $http.get("https://graph.microsoft.com/beta/users/" + id + "/memberOf/$/microsoft.graph.group?$filter=groupTypes/any(a:a%20eq%20'unified')", { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
                     deferred.resolve(result.data);
                 }, function (err) {
                     deferred.reject(err);
