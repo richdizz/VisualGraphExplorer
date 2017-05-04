@@ -200,7 +200,7 @@
         else {
             var width = window.innerWidth;
             var height = window.innerHeight;
-            var force, visual, link, node, currentData;
+            var force, visual, link, node, currentData, nodes;
 
             // gets cache code to prevent node cache
             var getCacheCode = function () {
@@ -213,15 +213,7 @@
 
             // updateVisual function for refreshing the d3 visual
             var updateVisual = function(data) {
-                //clear all visuals
-                visual.selectAll('circle').remove();
-                visual.selectAll('defs').remove();
-                visual.selectAll('line').remove();
-        
-                //go through children to set radius
-                setRadius(data, 20);
-
-                // computes children accordingly (discarding the hidden onces)
+                // computes children accordingly (discarding the hidden ones)
                 function computeChildren(p) {
                     var children = [];
                     for (var i = 0; p.children && i < p.children.length; i++) {
@@ -250,7 +242,7 @@
                 data.py = height / 2;
                 data.radius = 30;
                 currentData = data;
-                var nodes = flatten(data);
+                nodes = flatten(data);
                 var links = computeLinks(nodes);
         
                 //restart the force layout and update the links
@@ -279,10 +271,11 @@
                 //update the nodes
                 node = visual.selectAll('.node')
                     .data(nodes, function(d) {  return d.id; });
+                patterns = visual.selectAll('.imgPattern')
+                    .data(nodes, function(d) {  return d.id; });
             
-                //add defs for dynamic patterns
-                var def = visual.append('defs');
-                node.enter().append('pattern')
+                //add dynamic patterns for photos and remove old
+                patterns.enter().append('pattern')
                     .attr('id', function(d) { return d.code; })
                     .attr('class', 'imgPattern')
                     .attr('height', function(d) { return d.radius * 2; })
@@ -294,6 +287,7 @@
                     .attr('x', 0)
                     .attr('y', 0)
                     .attr('xlink:href', function (d) { return d.pic; });
+                patterns.exit().remove();
             
                 //add the nodes
                 node.enter().append('circle')
@@ -346,6 +340,8 @@
                 var nodes = [], i = 0;
 
                 function recurse(node) {
+                    if (!node.radius)
+                        node.radius = 20;
                     if (!node.code)
                         node.code = getCacheCode();
                     if (node.children) 
@@ -388,9 +384,9 @@
 
             // tick
             var tick = function(e) {
-                var q = d3.geom.quadtree(currentData), i = 0, n = currentData.length;
+                var q = d3.geom.quadtree(nodes), i = 0, n = nodes.length;
                 while (++i < n) {
-                    q.visit(collide(currentData[i]));
+                    q.visit(collide(nodes[i]));
                 }
 
                 link.attr('x1', function(d) { return d.source.x; })
