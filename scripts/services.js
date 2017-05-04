@@ -103,12 +103,28 @@
             return deferred.promise;
         };
 
-        // groups
+        // initial groups
         vgeService.groups = function(id) {
+            return vgeService.getGroups("https://graph.microsoft.com/beta/users/" + id + "/memberOf/$/microsoft.graph.group?$filter=groupTypes/any(a:a%20eq%20'unified')");
+        };
+
+        // next groups
+        vgeService.nextGroups = function() {
+            if (vgeService.groupsNextLink == null) {
+                return;
+            }
+            return vgeService.getGroups(vgeService.groupsNextLink);
+        };
+
+        // get groups
+        vgeService.groupsNextLink = null;
+        vgeService.getGroups = function(url) {
             var deferred = $q.defer();
         
             vgeService.kurve.getAccessTokenForScopesAsync(appConfig.scopes).then(function(token) {
-                $http.get("https://graph.microsoft.com/beta/users/" + id + "/memberOf/$/microsoft.graph.group?$filter=groupTypes/any(a:a%20eq%20'unified')", { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
+                $http.get(url, { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
+                    // TODO: fix paging for groups?
+                    vgeService.groupsNextLink = null;
                     deferred.resolve(result.data);
                 }, function (err) {
                     deferred.reject(err);
@@ -120,12 +136,28 @@
             return deferred.promise;
         };
 
-        // files
+        // initial files
         vgeService.files = function(id) {
+            return vgeService.getFiles("https://graph.microsoft.com/beta/users/" + id + "/drive/root/children");
+        };
+
+        // next files
+        vgeService.nextFiles = function() {
+            if (vgeService.filesNextLink == null) {
+                return;
+            }
+            return vgeService.getFiles(vgeService.filesNextLink);
+        };
+
+        // get files
+        vgeService.filesNextLink = null;
+        vgeService.getFiles = function(url) {
             var deferred = $q.defer();
         
             vgeService.kurve.getAccessTokenForScopesAsync(appConfig.scopes).then(function(token) {
-                $http.get("https://graph.microsoft.com/beta/users/" + id + "/drive/root/children", { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
+                $http.get(url, { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
+                    // TODO: fix paging for groups?
+                    vgeService.filesNextLink = null;
                     deferred.resolve(result.data);
                 }, function (err) {
                     deferred.reject(err);
@@ -208,13 +240,26 @@
             return deferred.promise;
         };
 
-        // messages
-        vgeService.messagesNextLink = 0;
+        // initial messages
         vgeService.messages = function(id) {
+            return vgeService.getMessages("https://graph.microsoft.com/beta/users/" + id + "/messages");
+        };
+
+        // next messages
+        vgeService.nextMessages = function() {
+            if (vgeService.messagesNextLink == null) {
+                return;
+            }
+            return vgeService.getMessages(vgeService.messagesNextLink);
+        };
+
+        // get messages
+        vgeService.messagesNextLink = null;
+        vgeService.getMessages = function(url) {
             var deferred = $q.defer();
         
             vgeService.kurve.getAccessTokenForScopesAsync(appConfig.scopes).then(function(token) {
-                $http.get("https://graph.microsoft.com/beta/users/" + id + "/messages", { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
+                $http.get(url, { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
                     // if a next link is present, store it so that we can
                     // get more data
                     vgeService.messagesNextLink = result.data['@odata.nextLink'];
@@ -229,13 +274,26 @@
             return deferred.promise;
         };
 
-        // events
-        vgeService.eventsNextLink = 0;
+        // initial events
         vgeService.events = function(id) {
+            return vgeService.getEvents("https://graph.microsoft.com/beta/users/" + id + "/events");
+        };
+
+        // next events
+        vgeService.nextEvents = function() {
+            if (vgeService.eventsNextLink == null) {
+                return;
+            }
+            return vgeService.getEvents(vgeService.eventsNextLink);
+        };
+
+        // get events
+        vgeService.eventsNextLink = null;
+        vgeService.getEvents = function(url) {
             var deferred = $q.defer();
         
             vgeService.kurve.getAccessTokenForScopesAsync(appConfig.scopes).then(function(token) {
-                $http.get("https://graph.microsoft.com/beta/users/" + id + "/events", { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
+                $http.get(url, { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
                     // if a next link is present, store it so that we can
                     // get more data
                     vgeService.eventsNextLink = result.data['@odata.nextLink'];
@@ -250,13 +308,26 @@
             return deferred.promise;
         };
 
-        // contacts
-        vgeService.contactsNextLink = 0;
+        // initial contacts
         vgeService.contacts = function(id) {
+            return vgeService.getContacts("https://graph.microsoft.com/beta/users/" + id + "/contacts");
+        };
+
+        // next contacts
+        vgeService.nextContacts = function() {
+            if (vgeService.contactsNextLink == null) {
+                return;
+            }
+            return vgeService.getContacts(vgeService.contactsNextLink);
+        };
+
+        // get contacts
+        vgeService.contactsNextLink = null;
+        vgeService.getContacts = function(url) {
             var deferred = $q.defer();
         
             vgeService.kurve.getAccessTokenForScopesAsync(appConfig.scopes).then(function(token) {
-                $http.get("https://graph.microsoft.com/beta/users/" + id + "/contacts", { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
+                $http.get(url, { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
                     // if a next link is present, store it so that we can
                     // get more data
                     vgeService.contactsNextLink = result.data['@odata.nextLink'];
@@ -271,13 +342,26 @@
             return deferred.promise;
         };
 
-        // notes
-        vgeService.notesNextLink = 0;
+        // initial notes
         vgeService.notes = function(id) {
+            return vgeService.getNotes("https://graph.microsoft.com/beta/users/" + id + "/notes/notebooks");
+        };
+
+        // next notes
+        vgeService.nextNotes = function() {
+            if (vgeService.notesNextLink == null) {
+                return;
+            }
+            return vgeService.getNotes(vgeService.notesNextLink);
+        };
+
+        // get notes
+        vgeService.notesNextLink = null;
+        vgeService.getNotes = function(url) {
             var deferred = $q.defer();
         
             vgeService.kurve.getAccessTokenForScopesAsync(appConfig.scopes).then(function(token) {
-                $http.get("https://graph.microsoft.com/beta/users/" + id + "/notes/notebooks", { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
+                $http.get(url, { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
                     // if a next link is present, store it so that we can
                     // get more data
                     vgeService.notesNextLink = result.data['@odata.nextLink'];
@@ -292,13 +376,26 @@
             return deferred.promise;
         };
 
-        // plans
-        vgeService.plansNextLink = 0;
+        // initial plans
         vgeService.plans = function(id) {
+            return vgeService.getPlans("https://graph.microsoft.com/beta/users/" + id + "/planner/plans");
+        };
+
+        // next plans
+        vgeService.nextPlans = function() {
+            if (vgeService.plansNextLink == null) {
+                return;
+            }
+            return vgeService.getPlans(vgeService.plansNextLink);
+        };
+
+        // get plans
+        vgeService.plansNextLink = null;
+        vgeService.getPlans = function(url) {
             var deferred = $q.defer();
         
             vgeService.kurve.getAccessTokenForScopesAsync(appConfig.scopes).then(function(token) {
-                $http.get("https://graph.microsoft.com/beta/groups/" + id + "/planner/plans", { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
+                $http.get(url, { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
                     // if a next link is present, store it so that we can
                     // get more data
                     vgeService.plansNextLink = result.data['@odata.nextLink'];
@@ -311,6 +408,16 @@
             });
         
             return deferred.promise;
+        };
+
+        // resets the next links
+        vgeService.resetNextLinks = function() {
+            vgeService.groupsNextLink = null;
+            vgeService.filesNextLink = null;
+            vgeService.messagesNextLink = null;
+            vgeService.eventsNextLink = null;
+            vgeService.contactsNextLink = null;
+            vgeService.notesNextLink = null;
         };
 
         return vgeService;
