@@ -169,8 +169,8 @@
         };
 
         // initial files
-        vgeService.files = function(id) {
-            return vgeService.getFiles("https://graph.microsoft.com/beta/users/" + id + "/drive/root/children");
+        vgeService.files = function(collection, id) {
+            return vgeService.getFiles("https://graph.microsoft.com/beta/" + collection + '/' + id + "/drive/root/children");
         };
 
         // next files
@@ -431,6 +431,23 @@
                     // if a next link is present, store it so that we can
                     // get more data
                     vgeService.plansNextLink = result.data['@odata.nextLink'];
+                    deferred.resolve(result.data);
+                }, function (err) {
+                    deferred.reject(err);
+                });
+            }, function(err) {
+                deferred.reject(err);
+            });
+        
+            return deferred.promise;
+        };
+
+        // conversations
+        vgeService.conversations = function(id) {
+            var deferred = $q.defer();
+        
+            vgeService.kurve.getAccessTokenForScopesAsync(appConfig.scopes).then(function(token) {
+                $http.get("https://graph.microsoft.com/beta/groups/" + id + "/conversations", { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
                     deferred.resolve(result.data);
                 }, function (err) {
                     deferred.reject(err);

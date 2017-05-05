@@ -141,10 +141,12 @@
                     // need to load and then mark loaded
                     switch (filterItem.type) {
                         case "groups":
-                            // query for files
+                            // query for groups
                             vgeService.groups(currentData.id).then(function(groupResults) {
                                 addNodes('groups', groupResults);
                                 setLoaded('groups');
+                            }, function () {
+                                vgeService.wait(false);
                             });
                             break;
                         case "people":
@@ -152,6 +154,8 @@
                             vgeService.people(currentData.id).then(function(peopleResults) {
                                 addNodes('people', peopleResults);
                                 setLoaded('people');
+                            }, function () {
+                                vgeService.wait(false);
                             });
                             break;
                         case "members":
@@ -159,6 +163,8 @@
                             vgeService.members(currentData.id).then(function(memberResult) {
                                 addNodes('members', memberResult);
                                 setLoaded('members');
+                            }, function () {
+                                vgeService.wait(false);
                             });
                             break;
                         case "directs":
@@ -166,6 +172,8 @@
                             vgeService.directs(currentData.id).then(function(directResult) {
                                 addNodes('directs', directResult);
                                 setLoaded('directs');
+                            }, function () {
+                                vgeService.wait(false);
                             });
                             break;
                         case "manager":
@@ -173,13 +181,20 @@
                             vgeService.manager(currentData.id).then(function(managerResult) {
                                 addNodes('manager', managerResult);
                                 setLoaded('manager');
+                            }, function () {
+                                vgeService.wait(false);
+                            }, function () {
+                                vgeService.wait(false);
                             });
                             break;
                         case "files":
                             // query for files
-                            vgeService.files(currentData.id).then(function(fileResults) {
+                            var collection = currentData.type == 'me' ? 'users' : currentData.type; 
+                            vgeService.files(collection, currentData.id).then(function(fileResults) {
                                 addNodes('files', fileResults);
                                 setLoaded('files');
+                            }, function () {
+                                vgeService.wait(false);
                             });
                             break;
                         case "trending":
@@ -187,6 +202,8 @@
                             vgeService.trending(($scope.selectedNode || currentData).id).then(function(trendingResult) {
                                 addNodes('trending', trendingResult);
                                 setLoaded('trending');
+                            }, function () {
+                                vgeService.wait(false);
                             });
                             break;
                         case "messages":
@@ -194,6 +211,17 @@
                             vgeService.messages(currentData.id).then(function(messageResult) {
                                 addNodes('messages', messageResult);
                                 setLoaded('messages');
+                            }, function () {
+                                vgeService.wait(false);
+                            });
+                            break;
+                        case "conversations":
+                            // query for messages
+                            vgeService.conversations(currentData.id).then(function(conversationResult) {
+                                addNodes('conversations', conversationResult);
+                                setLoaded('conversations');
+                            }, function () {
+                                vgeService.wait(false);
                             });
                             break;
                         case "events":
@@ -201,6 +229,8 @@
                             vgeService.events(currentData.id).then(function(eventResult) {
                                 addNodes('events', eventResult);
                                 setLoaded('events');
+                            }, function () {
+                                vgeService.wait(false);
                             });
                             break;
                         case "contacts":
@@ -208,6 +238,8 @@
                             vgeService.contacts(currentData.id).then(function(contactResult) {
                                 addNodes('contacts', contactResult);
                                 setLoaded('contacts');
+                            }, function () {
+                                vgeService.wait(false);
                             });
                             break;
                         case "notes":
@@ -215,6 +247,8 @@
                             vgeService.notes(currentData.id).then(function(noteResult) {
                                 addNodes('notes', noteResult);
                                 setLoaded('notes');
+                            }, function () {
+                                vgeService.wait(false);
                             });
                             break;
                         case "plans":
@@ -296,17 +330,7 @@
 
                         // get the photo for the group
                         vgeService.photo(newNode.id, "groups", newNode).then(function(photoResults) {
-                            photoResults.node.pic = photoResults.pic;
-
-                            var element = document.getElementById(photoResults.node.code);
-                            if (element != null && element.children.length > 0) {
-                                element.children[0].setAttribute("href", photoResults.node.pic);
-                            }
-
-                            element = document.getElementById(photoResults.node.code + "_c");
-                            if (element != null) {
-                                element.setAttribute("fill", "url(#" + photoResults.node.code + ")");
-                            }
+                            setNodeImage(photoResults);
                         });
                     }
 
@@ -327,6 +351,12 @@
                         vgeService.photo(result.value[i].id, "users", newNode).then(function(photoResults) {
                             setNodeImage(photoResults);
                         });
+                    }
+
+
+                    // update the 'get more' label
+                    if (type == 'people') {
+                        setMore('people', vgeService.peopleNextLink != null);
                     }
                 break;
                 case 'directs': 
@@ -372,7 +402,7 @@
                                 setNodeImage(photoResults);
                             });
                         }
-                    } 
+                    }
 
                     // update the 'get more' label
                     setMore('files', vgeService.filesNextLink != null);
@@ -385,6 +415,12 @@
 
                     // update the 'get more' label
                     setMore('messages', vgeService.messagesNextLink != null);
+                break;
+                case 'conversations': 
+                    for (var i = 0; i < result.value.length; i++) {
+                        var newNode = createNode(result.value[i].id, result.value[i].name, 'conversations', '/images/08messages.png', result.value[i]);
+                        currentData.children.push(newNode);
+                    }
                 break;
                 case 'events': 
                     for (var i = 0; i < result.value.length; i++) {
