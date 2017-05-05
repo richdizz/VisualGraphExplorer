@@ -23,12 +23,18 @@
         }
     }])
     .controller("visualCtrl", ["$scope", "$location", "vgeService", function($scope, $location, vgeService) {
+        // private variables
+        var currentData = {};
+        
+        // scope
         $scope.json = {};
+
         $scope.type = "me";
+
         $scope.typeColors = [
             { type: "me", text: "Me", color: "#e81224", show: true, enabled: false, pic: "/images/01me.png", more: false, types: ["me"] },
             { type: "groups", text: "Groups", color: "#f7630c", show: false, enabled: true, pic: "/images/02groups.png", more: false, types: ["me"] },
-            { type: "people", text: "People", color: "#ffb900", show: true, enabled: true, pic: "/images/03people.png", more: false, types: ["me"] },
+            { type: "people", text: "People", color: "#ffb900", show: false, enabled: true, pic: "/images/03people.png", more: false, types: ["me"] },
             { type: "members", text: "Members", color: "#ffb900", show: true, enabled: true, pic: "/images/03people.png", more: false, types: ["groups"] },
             { type: "directs", text: "Direct Reports", color: "#fce100", show: false, enabled: true, pic: "/images/04directs.png", more: false, types: ["me"] },
             { type: "manager", text: "Manager", color: "#bad80a", show: false, enabled: true, pic: "/images/05manager.png", more: false, types: ["me"] },
@@ -43,15 +49,185 @@
             ///MORE HERE
         ];
 
-        // private function to get color based on the node type
-        var getColor = function(type) {
-            for (var i = 0; i < $scope.typeColors.length; i++) {
-                if ($scope.typeColors[i].type === type)
-                    return $scope.typeColors[i].color;
+        $scope.showDetails = true;
+
+        $scope.showFilters = false;
+
+        $scope.toggleMenu = function(option) {
+            $scope.showDetails = (option == "details");
+            $scope.showFilters = (option == "filters");
+        };
+
+        $scope.toggleMore = function(filterItem) {
+            // start the spinner
+            vgeService.wait(true);
+
+            switch (filterItem.type) {
+                case 'groups': 
+                    // query for groups
+                    vgeService.nextGroup().then(function(groupResult) {
+                        addNodes('groups', groupResult);
+                    });
+                break;
+                case 'files': 
+                    // query for files
+                    vgeService.nextFiles().then(function(fileResult) {
+                        addNodes('files', fileResult);
+                    });
+                break;
+                case 'messages': 
+                    // query for messages
+                    vgeService.nextMessages().then(function(messageResult) {
+                        addNodes('messages', messageResult);
+                    });
+                break;
+                case 'events': 
+                    // query for events
+                    vgeService.nextEvents().then(function(eventResult) {
+                        addNodes('events', eventResult);
+                    });
+                break;
+                case 'contacts': 
+                    // query for contacts
+                    vgeService.nextContacts().then(function(contactResult) {
+                        addNodes('contacts', contactResult);
+                    });
+                break;
+                case 'notes': 
+                    // query for notes
+                    vgeService.nextNotes().then(function(noteResult) {
+                        addNodes('notes', noteResult);
+                    });
+                break;
             }
         };
 
-        // private function to set the more flag
+        $scope.toggleFilter = function(filterItem, force) {
+            // check if force is requested
+            force = force || false;
+            if (force) {
+                filterItem.show = true;
+            }
+
+            // start the spinner
+            vgeService.wait(true);
+
+            // check which way to toggle the display
+            if (!filterItem.show) {
+                // this type is already loaded but we want to hide them now
+                for (var i = 0; i < currentData.children.length; i++) {
+                    if (currentData.children[i].type == filterItem.type)
+                        currentData.children[i].hide = true;
+                }
+
+                // update the 'get more' label
+                setMore(filterItem.type, false);
+
+                // update the visual and stop spinner
+                updateVisual(currentData);
+                vgeService.wait(false);
+            }
+            else {
+                // first check to see if loaded
+                if (currentData.loadStatus[filterItem.type]) {
+                    // already loaded...loop through and toggle to show
+                    for (var i = 0; i < currentData.children.length; i++) {
+                        if (currentData.children[i].type == filterItem.type)
+                            currentData.children[i].hide = false;
+                    }
+
+                    // update the visual and stop spinner
+                    updateVisual(currentData);
+                    vgeService.wait(false);
+                }
+                else {
+                    // need to load and then mark loaded
+                    switch (filterItem.type) {
+                        case "groups":
+                            // query for files
+                            vgeService.groups(currentData.id).then(function(groupResults) {
+                                addNodes('groups', groupResults);
+                            });
+                            break;
+                        case "people":
+                            // query for people
+                            vgeService.people(currentData.id).then(function(peopleResults) {
+                                addNodes('people', peopleResults);
+                            });
+                            break;
+                        case "directs":
+                            // query for directs
+                            vgeService.directs(currentData.id).then(function(directResult) {
+                                addNodes('directs', directResult);
+                            });
+                            break;
+                        case "manager":
+                            // query for manager
+                            vgeService.manager(currentData.id).then(function(managerResult) {
+                                addNodes('manager', managerResult);
+                            });
+                            break;
+                        case "files":
+                            // query for files
+                            vgeService.files(currentData.id).then(function(fileResults) {
+                                addNodes('files', fileResults);
+                            });
+                            break;
+                        case "trending":
+                            // query for trending
+                            vgeService.trending(($scope.selectedNode || currentData).id).then(function(trendingResult) {
+                                addNodes('trending', trendingResult);
+                            });
+                            break;
+                        case "messages":
+                            // query for messages
+                            vgeService.messages(currentData.id).then(function(messageResult) {
+                                addNodes('messages', messageResult);
+                            });
+                            break;
+                        case "events":
+                            // query for events
+                            vgeService.events(currentData.id).then(function(eventResult) {
+                                addNodes('events', eventResult);
+                            });
+                            break;
+                        case "contacts":
+                            // query for contacts
+                            vgeService.contacts(currentData.id).then(function(contactResult) {
+                                addNodes('contacts', contactResult);
+                            });
+                            break;
+                        case "notes":
+                            // query for notes
+                            vgeService.notes(currentData.id).then(function(noteResult) {
+                                addNodes('notes', noteResult);
+                            });
+                            break;
+                        case "plans":
+                            // TODO:
+                            // query for plans
+                            //addNodes('plans', planResult);
+                            break;
+                    }
+                }
+            }
+        };
+
+        // get a filter
+        var getFilter = function(type) {
+            for (var i = 0; i < $scope.typeColors.length; i++) {
+                if ($scope.typeColors[i].type === type)
+                    return $scope.typeColors[i];
+            }
+        };
+
+        // get color based on the node type
+        var getColor = function(type) {
+            var filter = getFilter(type);
+            return filter.color;
+        };
+
+        // set the more flag
         var setMore = function(type, enabled) {
             for (var i = 0; i < $scope.typeColors.length; i++) {
                 if ($scope.typeColors[i].type == type) {
@@ -61,7 +237,35 @@
             } 
         };
 
-        // private function that adds nodes from a response
+        // gets cache code to prevent node cache
+        var getCacheCode = function () {
+            var range = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+            var id = '';
+            for (i = 0; i < 8; i++)
+                id += range[parseInt(Math.random() * 36)];
+            return id;
+        };
+
+        // create a node
+        var createNode = function(id, text, type, pic, obj) {
+            if (id == null || type == null || obj == null) {
+                throw 'not a node';
+            }
+
+            var newNode = { id: id, 
+                text: text, 
+                type: type, 
+                pic: pic, 
+                children: [], 
+                code: getCacheCode(),
+                loadStatus: { },
+                hide: false, 
+                obj: obj
+            };
+            return newNode;
+        }
+
+        // add nodes from a response
         var addNodes = function (types, result) {
             if (result == null || result.length == 0) {
                 // update the visual and stop spinner
@@ -75,7 +279,7 @@
             switch (types) {
                 case 'groups':
                     for (var i = 0; i < result.value.length; i++) {
-                        var newNode = { id: result.value[i].id, text: result.value[i].name, type: "groups", pic: "/images/02groups.png", children: [], hide: false, obj: result.value[i] };
+                        var newNode = createNode(result.value[i].id, result.value[i].name, 'groups', '/images/02groups.png', result.value[i]);
                         currentData.children.push(newNode);
 
                         // get the photo for the group
@@ -98,59 +302,58 @@
                     setMore('groups', vgeService.groupsNextLink != null);
                 break;
                 case 'people':
-                    // TODO:
-                break;
-                case 'directs': 
+                    // add the people as children of root
                     for (var i = 0; i < result.value.length; i++) {
-                        var newNode = { id: result.value[i].id, text: result.value[i].displayName, type: "directs", pic: "/images/04directs.png", children: [], hide: false, obj: result.value[i] };
+                        var newNode = createNode(result.value[i].id, result.value[i].name, 'people', '/images/03people.png', result.value[i]);
                         currentData.children.push(newNode);
 
                         // get photo for the user
                         vgeService.photo(result.value[i].id, "users", newNode).then(function(photoResults) {
-                            photoResults.node.pic = photoResults.pic;
-                            document.getElementById(photoResults.node.code).children[0].setAttribute("href", photoResults.node.pic);
-                            document.getElementById(photoResults.node.code + "_c").setAttribute("fill", "url(#" + photoResults.node.code + ")");
+                            setNodeImage(photoResults);
+                        });
+                    }
+                break;
+                case 'directs': 
+                    for (var i = 0; i < result.value.length; i++) {
+                        var newNode = createNode(result.value[i].id, result.value[i].name, 'directs', '/images/04directs.png', result.value[i]);
+                        currentData.children.push(newNode);
+
+                        // get photo for the user
+                        vgeService.photo(result.value[i].id, "users", newNode).then(function(photoResults) {
+                            setNodeImage(photoResults);
                         });
                     }
                 break;
                 case 'manager':
-                    var newNode = { id: result.id, text: result.displayName, type: "manager", pic: "/images/05manager.png", children: [], hide: false, obj: result };
+                    var newNode = createNode(result.id, result.name, 'manager', '/images/05manager.png', result);
                     currentData.children.push(newNode);
 
                     // get photo for the user
                     vgeService.photo(result.id, "users", newNode).then(function(photoResults) {
-                        photoResults.node.pic = photoResults.pic;
-                        document.getElementById(photoResults.node.code).children[0].setAttribute("href", photoResults.node.pic);
-                        document.getElementById(photoResults.node.code + "_c").setAttribute("fill", "url(#" + photoResults.node.code + ")");
+                        setNodeImage(photoResults);
                     });
                 break;
                 case 'trending':
                     for (var i = 0; i < result.value.length; i++) {
-                        var newNode = { id: result.value[i].id, text: result.value[i].displayName, type: "trending", pic: "/images/07trending.png", children: [], hide: false, obj: result.value[i] };
+                        var newNode = createNode(result.value[i].id, result.value[i].name, 'trending', '/images/07trending.png', result.value[i]);
                         currentData.children.push(newNode);
 
                         // get thumbnail if this is a file
                         vgeService.thumbnail(currentData.id, result.value[i].resourceReference.id + "/thumbnails", newNode).then(function(photoResults) {
-                            if (photoResults.pic != "") {
-                                photoResults.node.pic = photoResults.pic;
-                                document.getElementById(photoResults.node.code).children[0].setAttribute("href", photoResults.node.pic);
-                                document.getElementById(photoResults.node.code + "_c").setAttribute("fill", "url(#" + photoResults.node.code + ")");
-                            }    
+                            setNodeImage(photoResults);
                         });
                     }
                 break;
                 case 'files':
                     // add the people as children
                     for (var i = 0; i < result.value.length; i++) {
-                        var newNode = { id: result.value[i].id, text: result.value[i].name, type: "files", pic: "/images/06files.png", children: [], hide: false, obj: result.value[i] };
+                        var newNode = createNode(result.value[i].id, result.value[i].name, 'files', '/images/06files.png', result.value[i]);
                         currentData.children.push(newNode);
 
                         // get thumbnail if this is a file
                         if (result.value[i].file) {
                             vgeService.thumbnail(currentData.id, "drive/items/" + newNode.id + "/thumbnails", newNode).then(function(photoResults) {
-                                photoResults.node.pic = photoResults.pic;
-                                document.getElementById(photoResults.node.code).children[0].setAttribute("href", photoResults.node.pic);
-                                document.getElementById(photoResults.node.code + "_c").setAttribute("fill", "url(#" + photoResults.node.code + ")");
+                                setNodeImage(photoResults);
                             });
                         }
                     } 
@@ -160,7 +363,7 @@
                 break;
                 case 'messages': 
                     for (var i = 0; i < result.value.length; i++) {
-                        var newNode = { id: result.value[i].id, text: result.value[i].displayName, type: "messages", pic: "/images/08messages.png", children: [], hide: false, obj: result.value[i] };
+                        var newNode = createNode(result.value[i].id, result.value[i].name, 'messages', '/images/08messages.png', result.value[i]);
                         currentData.children.push(newNode);
                     }
 
@@ -169,7 +372,7 @@
                 break;
                 case 'events': 
                     for (var i = 0; i < result.value.length; i++) {
-                        var newNode = { id: result.value[i].id, text: result.value[i].displayName, type: "events", pic: "/images/09events.png", children: [], hide: false, obj: result.value[i] };
+                        var newNode = createNode(result.value[i].id, result.value[i].name, 'events', '/images/09events.png', result.value[i]);
                         currentData.children.push(newNode);
                     }
 
@@ -178,7 +381,7 @@
                 break;
                 case 'contacts':
                     for (var i = 0; i < result.value.length; i++) {
-                        var newNode = { id: result.value[i].id, text: result.value[i].displayName, type: "contacts", pic: "/images/10contacts.png", children: [], hide: false, obj: result.value[i] };
+                        var newNode = createNode(result.value[i].id, result.value[i].name, 'contacts', '/images/10contacts.png', result.value[i]);
                         currentData.children.push(newNode);
                     }
 
@@ -187,7 +390,7 @@
                 break;
                 case 'notes':
                     for (var i = 0; i < result.value.length; i++) {
-                        var newNode = { id: result.value[i].id, text: result.value[i].displayName, type: "notes", pic: "/images/11notes.png", children: [], hide: false, obj: result.value[i] };
+                        var newNode = createNode(result.value[i].id, result.value[i].name, 'notes', '/images/11notes.png', result.value[i]);
                         currentData.children.push(newNode);
                     }
 
@@ -201,13 +404,56 @@
             vgeService.wait(false);
         }
 
-        // toggle the menu
-        $scope.showDetails = true;
-        $scope.showFilters = false;
-        $scope.toggleMenu = function(option) {
-            $scope.showDetails = (option == "details");
-            $scope.showFilters = (option == "filters");
-        };
+        // set node image
+        var setNodeImage = function(node, image) {
+            if (node == null) {
+                throw 'missing node'
+            }
+
+            // if only one parameter is supplied, assumed node is an object of needed parameters
+            if (image == null && node.node == null && node.pic == null) {
+                console.error('missing image');
+            }
+            else {
+                image = node.pic;
+                node = node.node;
+            }
+
+            node.pic = image;
+
+            var element = document.getElementById(node.code);
+            if (element != null) {
+                element.children[0].setAttribute("href", node.pic);
+            }
+
+            element = document.getElementById(node.code + "_c");
+            if (element != null) {
+                element.setAttribute("fill", "url(#" + node.code + ")");
+            }
+        }
+
+        // computes children accordingly (discarding the hidden ones)
+        var computeChildren = function(p) {
+            var children = [];
+            for (var i = 0; p.children && i < p.children.length; i++) {
+                if (p.children[i].hide) {
+                    continue;
+                }
+                children.push(p.children[i]);
+            }
+            return children;
+        }
+
+        // computes links
+        var computeLinks = function(nodes) {
+            return d3.merge(nodes.map(function(parent) {
+                return computeChildren(parent).map(function(child) {
+                    return {source: parent, target: child};
+                });
+            }));
+        }
+
+        // initialization
 
         // ensure the user is signed in
         if (!vgeService.kurve.isLoggedIn())
@@ -217,38 +463,8 @@
             var height = window.innerHeight;
             var force, visual, link, node, currentData, nodes;
 
-            // gets cache code to prevent node cache
-            var getCacheCode = function () {
-                var range = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
-                var id = '';
-                for (i = 0; i < 8; i++)
-                    id += range[parseInt(Math.random() * 36)];
-                return id;
-            };
-
             // updateVisual function for refreshing the d3 visual
             var updateVisual = function(data) {
-                // computes children accordingly (discarding the hidden ones)
-                function computeChildren(p) {
-                    var children = [];
-                    for (var i = 0; p.children && i < p.children.length; i++) {
-                        if (p.children[i].hide) {
-                            continue;
-                        }
-                        children.push(p.children[i]);
-                    }
-                    return children;
-                }
-
-                // computes links
-                function computeLinks(nodes) {
-                    return d3.merge(nodes.map(function(parent) {
-                        return computeChildren(parent).map(function(child) {
-                            return {source: parent, target: child};
-                        });
-                    }));
-                }
-        
                 //prepare the data and restart the force
                 data.fixed = true;
                 data.x = width / 2;
@@ -359,8 +575,6 @@
                 function recurse(node) {
                     if (!node.radius)
                         node.radius = 20;
-                    if (!node.code)
-                        node.code = getCacheCode();
                     if (node.children) 
                         node.size = node.children.reduce(function(p, v) {return p + recurse(v); }, 0);
                     if (!node.id) 
@@ -416,6 +630,31 @@
                     .attr("cy", function(d) { return d.y; });
             };
 
+            // sets the root (top) node
+            var setRootNode = function(node) {
+                currentData = node;
+
+                var filters = [];
+                switch (node.type) {
+                    case 'me':
+                        filters.push('people');
+                    break;
+                    case 'group':
+                        filters.push('members');
+                    break;
+                }
+
+                // toggle filters
+                $scope.toggleFilter(getFilter('people'), true);
+                for (var i = 0; i < filters.length; i++) {
+                    var filter = getFilter(filters[i]);
+                    if (filter == null) {
+                        throw 'invalid filter';
+                    }
+                    $scope.toggleFilter(filter, true);
+                }
+            }
+
             // initialize force
             force = d3.layout.force()
                 .on('tick', tick)
@@ -434,186 +673,15 @@
 
             // initialize visual using the graph getting ME
             vgeService.wait(true);
-            currentData = {};
             vgeService.me().then(function(meResults) {
-                currentData = { id: meResults.id, text: meResults.displayName, type: "me", pic: "/images/01me.png", children: [], code: getCacheCode(), loadStatus: { people: true }, hide: false, obj: meResults };
-
-                // next get people
-                vgeService.people(meResults.id).then(function(peopleResults) {
-                    // add the people as children of root
-                    for (var i = 0; i < peopleResults.value.length; i++) {
-                        var newNode = { id: peopleResults.value[i].id, text: peopleResults.value[i].displayName, type: "people", pic: "/images/03people.png", children: [], hide: false, obj: peopleResults.value[i] };
-                        currentData.children.push(newNode);
-
-                        // get photo for the user
-                        vgeService.photo(peopleResults.value[i].id, "users", newNode).then(function(photoResults) {
-                            photoResults.node.pic = photoResults.pic;
-                            document.getElementById(photoResults.node.code).children[0].setAttribute("href", photoResults.node.pic);
-                            document.getElementById(photoResults.node.code + "_c").setAttribute("fill", "url(#" + photoResults.node.code + ")");
-                        });
-                    }
-                    
-                    // update the visual and stop spinner
-                    updateVisual(currentData);
-                    vgeService.wait(false);
-
-                    // get the photo for me
-                    vgeService.photo(meResults.id, "users", currentData).then(function(photoResults) {
-                        photoResults.node.pic = photoResults.pic;
-                        document.getElementById(photoResults.node.code).children[0].setAttribute("href", photoResults.node.pic);
-                        document.getElementById(photoResults.node.code + "_c").setAttribute("fill", "url(#" + photoResults.node.code + ")");
-                    });
+                var newNode = createNode(meResults.id, meResults.displayName, 'me', '/images/01me.png', meResults);
+                setRootNode(newNode)
+        
+                // get the photo for me
+                vgeService.photo(meResults.id, "users", currentData).then(function(photoResults) {
+                    setNodeImage(photoResults);
                 });
             });
-
-            $scope.toggleMore = function(filterItem) {
-                // start the spinner
-                vgeService.wait(true);
-
-                switch (filterItem.type) {
-                    case 'groups': 
-                        // query for groups
-                        vgeService.nextGroup().then(function(groupResult) {
-                            addNodes('groups', groupResult);
-                        });
-                    break;
-                    case 'files': 
-                        // query for files
-                        vgeService.nextFiles().then(function(fileResult) {
-                            addNodes('files', fileResult);
-                        });
-                    break;
-                    case 'messages': 
-                        // query for messages
-                        vgeService.nextMessages().then(function(messageResult) {
-                            addNodes('messages', messageResult);
-                        });
-                    break;
-                    case 'events': 
-                        // query for events
-                        vgeService.nextEvents().then(function(eventResult) {
-                            addNodes('events', eventResult);
-                        });
-                    break;
-                    case 'contacts': 
-                        // query for contacts
-                        vgeService.nextContacts().then(function(contactResult) {
-                            addNodes('contacts', contactResult);
-                        });
-                    break;
-                    case 'notes': 
-                        // query for notes
-                        vgeService.nextNotes().then(function(noteResult) {
-                            addNodes('notes', noteResult);
-                        });
-                    break;
-                }
-            };
-
-            // toggles
-            $scope.toggleFilter = function(filterItem) {
-                // start the spinner
-                vgeService.wait(true);
-
-                // check which way to toggle the display
-                if (!filterItem.show) {
-                    // this type is already loaded but we want to hide them now
-                    for (var i = 0; i < currentData.children.length; i++) {
-                        if (currentData.children[i].type == filterItem.type)
-                            currentData.children[i].hide = true;
-                    }
-
-                    // update the 'get more' label
-                    setMore(filterItem.type, false);
-
-                    // update the visual and stop spinner
-                    updateVisual(currentData);
-                    vgeService.wait(false);
-                }
-                else {
-                    // first check to see if loaded
-                    if (currentData.loadStatus[filterItem.type]) {
-                        // already loaded...loop through and toggle to show
-                        for (var i = 0; i < currentData.children.length; i++) {
-                            if (currentData.children[i].type == filterItem.type)
-                                currentData.children[i].hide = false;
-                        }
-
-                        // update the visual and stop spinner
-                        updateVisual(currentData);
-                        vgeService.wait(false);
-                    }
-                    else {
-                        // need to load and then mark loaded
-                        switch (filterItem.type) {
-                            case "groups":
-                                // query for files
-                                vgeService.groups(currentData.id).then(function(groupResults) {
-                                    addNodes('groups', groupResults);
-                                });
-                                break;
-                            case "people":
-                                // TODO:
-                                // query for people
-                                //addNodes('people', peopleResult);
-                                break;
-                            case "directs":
-                                // query for directs
-                                vgeService.directs(currentData.id).then(function(directResult) {
-                                    addNodes('directs', directResult);
-                                });
-                                break;
-                            case "manager":
-                                // query for manager
-                                vgeService.manager(currentData.id).then(function(managerResult) {
-                                    addNodes('manager', managerResult);
-                                });
-                                break;
-                            case "files":
-                                // query for files
-                                vgeService.files(currentData.id).then(function(fileResults) {
-                                    addNodes('files', fileResults);
-                                });
-                                break;
-                            case "trending":
-                                // query for trending
-                                vgeService.trending(currentData.id).then(function(trendingResult) {
-                                    addNodes('trending', trendingResult);
-                                });
-                                break;
-                            case "messages":
-                                // query for messages
-                                vgeService.messages(currentData.id).then(function(messageResult) {
-                                    addNodes('messages', messageResult);
-                                });
-                                break;
-                            case "events":
-                                // query for events
-                                vgeService.events(currentData.id).then(function(eventResult) {
-                                    addNodes('events', eventResult);
-                                });
-                                break;
-                            case "contacts":
-                                // query for contacts
-                                vgeService.contacts(currentData.id).then(function(contactResult) {
-                                    addNodes('contacts', contactResult);
-                                });
-                                break;
-                            case "notes":
-                                // query for notes
-                                vgeService.notes(currentData.id).then(function(noteResult) {
-                                    addNodes('notes', noteResult);
-                                });
-                                break;
-                            case "plans":
-                                // TODO:
-                                // query for plans
-                                //addNodes('plans', planResult);
-                                break;
-                        }
-                    }
-                }
-            };
         }
     }]);
 })();
