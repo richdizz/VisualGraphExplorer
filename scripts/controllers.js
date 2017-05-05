@@ -24,19 +24,22 @@
     }])
     .controller("visualCtrl", ["$scope", "$location", "vgeService", function($scope, $location, vgeService) {
         $scope.json = {};
+        $scope.type = "me";
         $scope.typeColors = [
-            { type: "me", text: "Me", color: "#e81224", show: true, enabled: false, pic: "/images/01me.png", more: false },
-            { type: "groups", text: "Groups", color: "#f7630c", show: false, enabled: true, pic: "/images/02groups.png", more: false },
-            { type: "people", text: "People", color: "#ffb900", show: true, enabled: true, pic: "/images/03people.png", more: false },
-            { type: "directs", text: "Direct Reports", color: "#fce100", show: false, enabled: true, pic: "/images/04directs.png", more: false },
-            { type: "manager", text: "Manager", color: "#bad80a", show: false, enabled: true, pic: "/images/05manager.png", more: false },
-            { type: "files", text: "Files", color: "#16c60c", show: false, enabled: true, pic: "/images/06files.png", more: false },
-            { type: "trending", text: "Trending", color: "#00b7c3", show: false, enabled: true, pic: "/images/07trending.png", more: false },
-            { type: "messages", text: "Messages", color: "#0078d7", show: false, enabled: true, pic: "/images/08messages.png", more: false },
-            { type: "events", text: "Events", color: "#4f4bd9", show: false, enabled: true, pic: "/images/09events.png", more: false },
-            { type: "contacts", text: "Contacts", color: "#744da9", show: false, enabled: true, pic: "/images/10contacts.png", more: false },
-            { type: "notes", text: "Notes", color: "#881798", show: false, enabled: true, pic: "/images/11notes.png", more: false },
-            { type: "plans", text: "Plans", color: "#e3008c", show: false, enabled: true, pic: "/images/12plans.png", more: false }
+            { type: "me", text: "Me", color: "#e81224", show: true, enabled: false, pic: "/images/01me.png", more: false, types: ["me"] },
+            { type: "groups", text: "Groups", color: "#f7630c", show: false, enabled: true, pic: "/images/02groups.png", more: false, types: ["me"] },
+            { type: "people", text: "People", color: "#ffb900", show: true, enabled: true, pic: "/images/03people.png", more: false, types: ["me"] },
+            { type: "members", text: "Members", color: "#ffb900", show: true, enabled: true, pic: "/images/03people.png", more: false, types: ["groups"] },
+            { type: "directs", text: "Direct Reports", color: "#fce100", show: false, enabled: true, pic: "/images/04directs.png", more: false, types: ["me"] },
+            { type: "manager", text: "Manager", color: "#bad80a", show: false, enabled: true, pic: "/images/05manager.png", more: false, types: ["me"] },
+            { type: "files", text: "Files", color: "#16c60c", show: false, enabled: true, pic: "/images/06files.png", more: false, types: ["me", "groups"] },
+            { type: "trending", text: "Trending", color: "#00b7c3", show: false, enabled: true, pic: "/images/07trending.png", more: false, types: ["me"] },
+            { type: "messages", text: "Messages", color: "#0078d7", show: false, enabled: true, pic: "/images/08messages.png", more: false, types: ["me"] },
+            { type: "conversations", text: "Conversations", color: "#0078d7", show: false, enabled: true, pic: "/images/08messages.png", more: false, types: ["groups"] },
+            { type: "events", text: "Events", color: "#4f4bd9", show: false, enabled: true, pic: "/images/09events.png", more: false, types: ["me"] },
+            { type: "contacts", text: "Contacts", color: "#744da9", show: false, enabled: true, pic: "/images/10contacts.png", more: false, types: ["me"] },
+            { type: "notes", text: "Notes", color: "#881798", show: false, enabled: true, pic: "/images/11notes.png", more: false, types: ["me"] },
+            { type: "plans", text: "Plans", color: "#e3008c", show: false, enabled: true, pic: "/images/12plans.png", more: false, types: ["me"] }
             ///MORE HERE
         ];
 

@@ -99,6 +99,11 @@ body {
     cursor: pointer;
 }
 
+#menuTabs .menuTab:last-child {
+    width: 158px;
+    border-right: 1px solid #BAD80A;
+}
+
 .menuTab.selected {
     background-color: #222;
     border-bottom: 1px solid #222;
@@ -106,7 +111,7 @@ body {
 
 .tabContent {
     position: absolute;
-    width: 320px;
+    width: 298px;
     top: 40px;
     bottom: 0px;
     left: 0px;
@@ -114,6 +119,7 @@ body {
     background: #222;
     padding: 10px;
     border-left: 1px solid #BAD80A;
+    border-right: 1px solid #BAD80A;
 }
 
 #jsonWindow {
@@ -121,7 +127,7 @@ body {
     top: 10px;
     bottom: 10px;
     left: 10px;
-    right: 30px;
+    right: 10px;
     background: #ddd;
     padding: 5px;
     overflow: hidden;
@@ -223,14 +229,15 @@ body {
     position: absolute;
     z-index: 1200;
     width: 320px;
-    height: 200px;
+    height: 130px;
     top: 50%;
     left: 50%;
     margin-left: -160px;
-    margin-top: -100px;
+    margin-top: -65px;
     border: 1px solid #BAD80A;
     background: #333;
-    padding: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 .loginContainer .loginModal button {

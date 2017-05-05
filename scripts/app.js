@@ -10,5 +10,16 @@
         }).otherwise({
             redirectTo: "/visual"
         });
-    }]);
+    }])
+    .filter('nodeFilters', function () {
+        return function (filters, type) {
+            var items = [];
+            angular.forEach(filters, function (value, key) {
+                if (value.types.indexOf(type) != -1 && value.enabled) {
+                    items.push(value);
+                }
+            }, items);
+            return items;
+        };
+    });
 })();

@@ -1,6 +1,6 @@
 <div id="menu">
     <div id="menuTabs">
-        <div class="menuTab" ng-click="toggleMenu('details')" ng-class="{ 'selected': showDetails }">Node Details</div>
+        <div class="menuTab" ng-click="toggleMenu('details')" ng-class="{ 'selected': showDetails }">Object Details</div>
         <div class="menuTab" ng-click="toggleMenu('filters')" ng-class="{ 'selected': showFilters }">Filter Options</div>
     </div>
     <div id="nodeDetail" class="tabContent" ng-show="showDetails">
@@ -9,7 +9,7 @@
         </div>
     </div>
     <div id="filters" class="tabContent" ng-show="showFilters">
-        <div ng-repeat="item in typeColors | filter:{ enabled: true }" class="filterItem">
+        <div ng-repeat="item in typeColors | nodeFilters:type" class="filterItem">
             <div class="textContainer">Show {{item.text}}</div>
             <div class="switchContainer"><switch ng-model="item.show" ng-style="{ 'border-color' : item.color, 'background': (item.show) ? item.color : '#fff' }" ng-change="toggleFilter(item)"></switch></div>
             <div class="textContainer linkLabel" ng-show="item.more" ng-click="toggleMore(item)">Get more</div>
