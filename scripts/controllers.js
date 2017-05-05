@@ -527,7 +527,7 @@
             $location.path("/login");
         }
         else {
-            var width = window.innerWidth;
+            var width = window.innerWidth - 320; // account for menu width
             var height = window.innerHeight;
             var force, visual, link, node, currentData, nodes, links;
             var currentData = {};
