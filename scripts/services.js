@@ -170,11 +170,11 @@
         };
 
         // thumbnail
-        vgeService.thumbnail = function(userid, fileid, node) {
+        vgeService.thumbnail = function(userid, path, node) {
             var deferred = $q.defer();
         
             vgeService.kurve.getAccessTokenForScopesAsync(appConfig.scopes).then(function(token) {
-                $http.get("https://graph.microsoft.com/beta/users/" + userid + "/drive/items/" + fileid + "/thumbnails", { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
+                $http.get("https://graph.microsoft.com/beta/users/" + userid + "/" + path, { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
                     if (result.data.value.length > 0)
                         deferred.resolve({ pic: result.data.value[0].small.url, node: node });
                     else

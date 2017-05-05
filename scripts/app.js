@@ -1,5 +1,5 @@
 (function() {
-    angular.module("vge.app", ["vge.services", "vge.controllers", "uiSwitch", "ngRoute"])
+    angular.module("vge.app", ["vge.services", "vge.controllers", "uiSwitch", "jsonFormatter", "ngRoute"])
     .config(["$routeProvider", function($routeProvider) {
         $routeProvider.when("/visual", {
             controller: "visualCtrl",

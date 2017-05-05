@@ -23,6 +23,7 @@
         }
     }])
     .controller("visualCtrl", ["$scope", "$location", "vgeService", function($scope, $location, vgeService) {
+        $scope.json = {'name': 'Richard'};
         $scope.typeColors = [
             { type: "me", text: "Me", color: "#e81224", show: true, enabled: false, pic: "/images/01me.png", more: false },
             { type: "groups", text: "Groups", color: "#f7630c", show: false, enabled: true, pic: "/images/02groups.png", more: false },
@@ -71,7 +72,7 @@
             switch (types) {
                 case 'groups':
                     for (var i = 0; i < result.value.length; i++) {
-                        var newNode = { id: result.value[i].id, text: result.value[i].name, type: "groups", pic: "/images/02groups.png", children: [], hide: false };
+                        var newNode = { id: result.value[i].id, text: result.value[i].name, type: "groups", pic: "/images/02groups.png", children: [], hide: false, obj: result.value[i] };
                         currentData.children.push(newNode);
 
                         // get the photo for the group
@@ -98,7 +99,7 @@
                 break;
                 case 'directs': 
                     for (var i = 0; i < result.value.length; i++) {
-                        var newNode = { id: result.value[i].id, text: result.value[i].displayName, type: "directs", pic: "/images/04directs.png", children: [], hide: false };
+                        var newNode = { id: result.value[i].id, text: result.value[i].displayName, type: "directs", pic: "/images/04directs.png", children: [], hide: false, obj: result.value[i] };
                         currentData.children.push(newNode);
 
                         // get photo for the user
@@ -110,7 +111,7 @@
                     }
                 break;
                 case 'manager':
-                    var newNode = { id: result.id, text: result.displayName, type: "manager", pic: "/images/05manager.png", children: [], hide: false };
+                    var newNode = { id: result.id, text: result.displayName, type: "manager", pic: "/images/05manager.png", children: [], hide: false, obj: result };
                     currentData.children.push(newNode);
 
                     // get photo for the user
@@ -122,19 +123,28 @@
                 break;
                 case 'trending':
                     for (var i = 0; i < result.value.length; i++) {
-                        var newNode = { id: result.value[i].id, text: result.value[i].displayName, type: "trending", pic: "/images/07trending.png", children: [], hide: false };
+                        var newNode = { id: result.value[i].id, text: result.value[i].displayName, type: "trending", pic: "/images/07trending.png", children: [], hide: false, obj: result.value[i] };
                         currentData.children.push(newNode);
+
+                        // get thumbnail if this is a file
+                        vgeService.thumbnail(currentData.id, result.value[i].resourceReference.id + "/thumbnails", newNode).then(function(photoResults) {
+                            if (photoResults.pic != "") {
+                                photoResults.node.pic = photoResults.pic;
+                                document.getElementById(photoResults.node.code).children[0].setAttribute("href", photoResults.node.pic);
+                                document.getElementById(photoResults.node.code + "_c").setAttribute("fill", "url(#" + photoResults.node.code + ")");
+                            }    
+                        });
                     }
                 break;
                 case 'files':
                     // add the people as children
                     for (var i = 0; i < result.value.length; i++) {
-                        var newNode = { id: result.value[i].id, text: result.value[i].name, type: "files", pic: "/images/06files.png", children: [], hide: false };
+                        var newNode = { id: result.value[i].id, text: result.value[i].name, type: "files", pic: "/images/06files.png", children: [], hide: false, obj: result.value[i] };
                         currentData.children.push(newNode);
 
                         // get thumbnail if this is a file
                         if (result.value[i].file) {
-                            vgeService.thumbnail(currentData.id, newNode.id, newNode).then(function(photoResults) {
+                            vgeService.thumbnail(currentData.id, "drive/items/" + newNode.id + "/thumbnails", newNode).then(function(photoResults) {
                                 photoResults.node.pic = photoResults.pic;
                                 document.getElementById(photoResults.node.code).children[0].setAttribute("href", photoResults.node.pic);
                                 document.getElementById(photoResults.node.code + "_c").setAttribute("fill", "url(#" + photoResults.node.code + ")");
@@ -147,7 +157,7 @@
                 break;
                 case 'messages': 
                     for (var i = 0; i < result.value.length; i++) {
-                        var newNode = { id: result.value[i].id, text: result.value[i].displayName, type: "messages", pic: "/images/08messages.png", children: [], hide: false };
+                        var newNode = { id: result.value[i].id, text: result.value[i].displayName, type: "messages", pic: "/images/08messages.png", children: [], hide: false, obj: result.value[i] };
                         currentData.children.push(newNode);
                     }
 
@@ -156,7 +166,7 @@
                 break;
                 case 'events': 
                     for (var i = 0; i < result.value.length; i++) {
-                        var newNode = { id: result.value[i].id, text: result.value[i].displayName, type: "events", pic: "/images/09events.png", children: [], hide: false };
+                        var newNode = { id: result.value[i].id, text: result.value[i].displayName, type: "events", pic: "/images/09events.png", children: [], hide: false, obj: result.value[i] };
                         currentData.children.push(newNode);
                     }
 
@@ -165,7 +175,7 @@
                 break;
                 case 'contacts':
                     for (var i = 0; i < result.value.length; i++) {
-                        var newNode = { id: result.value[i].id, text: result.value[i].displayName, type: "contacts", pic: "/images/10contacts.png", children: [], hide: false };
+                        var newNode = { id: result.value[i].id, text: result.value[i].displayName, type: "contacts", pic: "/images/10contacts.png", children: [], hide: false, obj: result.value[i] };
                         currentData.children.push(newNode);
                     }
 
@@ -174,7 +184,7 @@
                 break;
                 case 'notes':
                     for (var i = 0; i < result.value.length; i++) {
-                        var newNode = { id: result.value[i].id, text: result.value[i].displayName, type: "notes", pic: "/images/11notes.png", children: [], hide: false };
+                        var newNode = { id: result.value[i].id, text: result.value[i].displayName, type: "notes", pic: "/images/11notes.png", children: [], hide: false, obj: result.value[i] };
                         currentData.children.push(newNode);
                     }
 
@@ -189,9 +199,11 @@
         }
 
         // toggle the menu
-        $scope.showMenu = false;
-        $scope.toggleMenu = function() {
-            $scope.showMenu = !$scope.showMenu;
+        $scope.showDetails = true;
+        $scope.showFilters = false;
+        $scope.toggleMenu = function(option) {
+            $scope.showDetails = (option == "details");
+            $scope.showFilters = (option == "filters");
         };
 
         // ensure the user is signed in
@@ -309,6 +321,8 @@
                         if (d3.event.defaultPrevented) return true;
 
                         //TODO: show tooltip
+                        $scope.json = d.obj;
+                        $scope.$apply();
                     })
                     .on('mousemove', function(d, i) {
                         //prevent while dragging
@@ -419,13 +433,13 @@
             vgeService.wait(true);
             currentData = {};
             vgeService.me().then(function(meResults) {
-                currentData = { id: meResults.id, text: meResults.displayName, type: "me", pic: "/images/01me.png", children: [], code: getCacheCode(), loadStatus: { people: true }, hide: false };
+                currentData = { id: meResults.id, text: meResults.displayName, type: "me", pic: "/images/01me.png", children: [], code: getCacheCode(), loadStatus: { people: true }, hide: false, obj: meResults };
 
                 // next get people
                 vgeService.people(meResults.id).then(function(peopleResults) {
                     // add the people as children of root
                     for (var i = 0; i < peopleResults.value.length; i++) {
-                        var newNode = { id: peopleResults.value[i].id, text: peopleResults.value[i].displayName, type: "people", pic: "/images/03people.png", children: [], hide: false };
+                        var newNode = { id: peopleResults.value[i].id, text: peopleResults.value[i].displayName, type: "people", pic: "/images/03people.png", children: [], hide: false, obj: peopleResults.value[i] };
                         currentData.children.push(newNode);
 
                         // get photo for the user

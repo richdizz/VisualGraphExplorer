@@ -71,7 +71,7 @@ body {
 #menu {
     position: absolute;
     width: 320px;
-    right: -290px;
+    right: 0;
     top: 0px;
     bottom: 0px;
     background: #111;
@@ -79,34 +79,52 @@ body {
     transition: right .5s;
 }
 
-#menu.show {
+#menuTabs {
+    position: absolute;
+    left: 0px;
     right: 0px;
+    top: 0px;
+    height: 40px;
 }
 
-#menuLauncher {
-    position: absolute;
-    width: 30px;
-    left: 0px;
-    top: 0px;
-    bottom: 0px;
-    background: #555;
-    border-left: 1px solid #111;
+.menuTab {
+    width: 159px;
+    height: 29px;
+    background-color: #111;
+    float: left;
+    text-align: center;
+    padding-top: 10px;
+    border-left: 1px solid #BAD80A;
+    border-bottom: 1px solid #BAD80A;
     cursor: pointer;
 }
 
-#menuLauncher:hover {
-    background: #666;
+.menuTab.selected {
+    background-color: #222;
+    border-bottom: 1px solid #222;
 }
 
-#menuContent {
+.tabContent {
     position: absolute;
-    width: 290px;
-    left: 30px;
-    top: 0px;
+    width: 320px;
+    top: 40px;
     bottom: 0px;
-    background: #333;
-    border-left: 1px solid #111;
+    left: 0px;
+    right: 0px;
+    background: #222;
     padding: 10px;
+    border-left: 1px solid #BAD80A;
+}
+
+#jsonWindow {
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    left: 10px;
+    right: 30px;
+    background: #ddd;
+    padding: 5px;
+    overflow: hidden;
 }
 
 #legend {
