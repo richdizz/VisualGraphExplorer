@@ -86,12 +86,27 @@
             return deferred.promise;
         };
 
-        // people
+        // initial people
         vgeService.people = function(id) {
+            return vgeService.getPeople("https://graph.microsoft.com/beta/users/" + id + "/people?$filter=personType%20eq%20'Person'");
+        };
+
+        // next people
+        vgeService.nextPeople = function() {
+            if (vgeService.peopleNextLink == null) {
+                return;
+            }
+            return vgeService.getPeople(vgeService.peopleNextLink);
+        };
+
+        // get people
+        vgeService.peopleNextLink = null;
+        vgeService.getPeople = function(url) {
             var deferred = $q.defer();
         
             vgeService.kurve.getAccessTokenForScopesAsync(appConfig.scopes).then(function(token) {
-                $http.get("https://graph.microsoft.com/beta/users/" + id + "/people?$filter=personType%20eq%20'Person'", { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
+                $http.get(url, { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
+                    vgeService.peopleNextLink = null;
                     deferred.resolve(result.data);
                 }, function (err) {
                     deferred.reject(err);
@@ -429,6 +444,7 @@
 
         // resets the next links
         vgeService.resetNextLinks = function() {
+            vgeService.peopleNextLink = null;
             vgeService.groupsNextLink = null;
             vgeService.filesNextLink = null;
             vgeService.messagesNextLink = null;

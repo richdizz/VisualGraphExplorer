@@ -658,7 +658,6 @@
 
             // set the root (top) node
             var setRootNode = function(node) {
-
                 vgeService.wait(true);
 
                 $timeout(function () {
