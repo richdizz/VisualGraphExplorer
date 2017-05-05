@@ -22,7 +22,7 @@
             };
         }
     }])
-    .controller("visualCtrl", ["$scope", "$location", "vgeService", function($scope, $location, vgeService) {
+    .controller("visualCtrl", ["$scope", "$location", "vgeService", '$timeout', function($scope, $location, vgeService, $timeout) {
         // scope
         $scope.json = {};
 
@@ -30,19 +30,19 @@
 
         $scope.typeColors = [
             { type: "me", text: "Me", color: "#e81224", show: true, enabled: false, pic: "/images/01me.png", more: false, types: ["me"] },
-            { type: "groups", text: "Groups", color: "#f7630c", show: false, enabled: true, pic: "/images/02groups.png", more: false, types: ["me"] },
-            { type: "people", text: "People", color: "#ffb900", show: false, enabled: true, pic: "/images/03people.png", more: false, types: ["me"] },
+            { type: "groups", text: "Groups", color: "#f7630c", show: false, enabled: true, pic: "/images/02groups.png", more: false, types: ["me", "people", "members"] },
+            { type: "people", text: "People", color: "#ffb900", show: false, enabled: true, pic: "/images/03people.png", more: false, types: ["me", "people", "members"] },
             { type: "members", text: "Members", color: "#ffb900", show: true, enabled: true, pic: "/images/03people.png", more: false, types: ["groups"] },
-            { type: "directs", text: "Direct Reports", color: "#fce100", show: false, enabled: true, pic: "/images/04directs.png", more: false, types: ["me"] },
-            { type: "manager", text: "Manager", color: "#bad80a", show: false, enabled: true, pic: "/images/05manager.png", more: false, types: ["me"] },
-            { type: "files", text: "Files", color: "#16c60c", show: false, enabled: true, pic: "/images/06files.png", more: false, types: ["me", "groups"] },
-            { type: "trending", text: "Trending", color: "#00b7c3", show: false, enabled: true, pic: "/images/07trending.png", more: false, types: ["me"] },
-            { type: "messages", text: "Messages", color: "#0078d7", show: false, enabled: true, pic: "/images/08messages.png", more: false, types: ["me"] },
+            { type: "directs", text: "Direct Reports", color: "#fce100", show: false, enabled: true, pic: "/images/04directs.png", more: false, types: ["me", "people", "members"] },
+            { type: "manager", text: "Manager", color: "#bad80a", show: false, enabled: true, pic: "/images/05manager.png", more: false, types: ["me", "people", "members"] },
+            { type: "files", text: "Files", color: "#16c60c", show: false, enabled: true, pic: "/images/06files.png", more: false, types: ["me", "groups", "people", "members"] },
+            { type: "trending", text: "Trending", color: "#00b7c3", show: false, enabled: true, pic: "/images/07trending.png", more: false, types: ["me", "people", "members"] },
+            { type: "messages", text: "Messages", color: "#0078d7", show: false, enabled: true, pic: "/images/08messages.png", more: false, types: ["me", "people", "members"] },
             { type: "conversations", text: "Conversations", color: "#0078d7", show: false, enabled: true, pic: "/images/08messages.png", more: false, types: ["groups"] },
-            { type: "events", text: "Events", color: "#4f4bd9", show: false, enabled: true, pic: "/images/09events.png", more: false, types: ["me"] },
-            { type: "contacts", text: "Contacts", color: "#744da9", show: false, enabled: true, pic: "/images/10contacts.png", more: false, types: ["me"] },
-            { type: "notes", text: "Notes", color: "#881798", show: false, enabled: true, pic: "/images/11notes.png", more: false, types: ["me"] },
-            { type: "plans", text: "Plans", color: "#e3008c", show: false, enabled: true, pic: "/images/12plans.png", more: false, types: ["me"] }
+            { type: "events", text: "Events", color: "#4f4bd9", show: false, enabled: true, pic: "/images/09events.png", more: false, types: ["me", "people", "members"] },
+            { type: "contacts", text: "Contacts", color: "#744da9", show: false, enabled: true, pic: "/images/10contacts.png", more: false, types: ["me", "people", "members"] },
+            { type: "notes", text: "Notes", color: "#881798", show: false, enabled: true, pic: "/images/11notes.png", more: false, types: ["me", "people", "members"] },
+            { type: "plans", text: "Plans", color: "#e3008c", show: false, enabled: true, pic: "/images/12plans.png", more: false, types: ["me", "people", "members"] }
             ///MORE HERE
         ];
 
@@ -144,72 +144,81 @@
                             // query for files
                             vgeService.groups(currentData.id).then(function(groupResults) {
                                 addNodes('groups', groupResults);
+                                setLoaded('groups');
                             });
                             break;
                         case "people":
                             // query for people
                             vgeService.people(currentData.id).then(function(peopleResults) {
                                 addNodes('people', peopleResults);
+                                setLoaded('people');
                             });
                             break;
                         case "members":
                             // query for members
                             vgeService.members(currentData.id).then(function(memberResult) {
                                 addNodes('members', memberResult);
+                                setLoaded('members');
                             });
                             break;
                         case "directs":
                             // query for directs
                             vgeService.directs(currentData.id).then(function(directResult) {
                                 addNodes('directs', directResult);
+                                setLoaded('directs');
                             });
                             break;
                         case "manager":
                             // query for manager
                             vgeService.manager(currentData.id).then(function(managerResult) {
                                 addNodes('manager', managerResult);
+                                setLoaded('manager');
                             });
                             break;
                         case "files":
                             // query for files
                             vgeService.files(currentData.id).then(function(fileResults) {
                                 addNodes('files', fileResults);
+                                setLoaded('files');
                             });
                             break;
                         case "trending":
                             // query for trending
                             vgeService.trending(($scope.selectedNode || currentData).id).then(function(trendingResult) {
                                 addNodes('trending', trendingResult);
+                                setLoaded('trending');
                             });
                             break;
                         case "messages":
                             // query for messages
                             vgeService.messages(currentData.id).then(function(messageResult) {
                                 addNodes('messages', messageResult);
+                                setLoaded('messages');
                             });
                             break;
                         case "events":
                             // query for events
                             vgeService.events(currentData.id).then(function(eventResult) {
                                 addNodes('events', eventResult);
+                                setLoaded('events');
                             });
                             break;
                         case "contacts":
                             // query for contacts
                             vgeService.contacts(currentData.id).then(function(contactResult) {
                                 addNodes('contacts', contactResult);
+                                setLoaded('contacts');
                             });
                             break;
                         case "notes":
                             // query for notes
                             vgeService.notes(currentData.id).then(function(noteResult) {
                                 addNodes('notes', noteResult);
+                                setLoaded('notes');
                             });
                             break;
                         case "plans":
-                            // TODO:
-                            // query for plans
-                            //addNodes('plans', planResult);
+                            // TODO: query for plans
                             break;
                     }
                 }
@@ -460,6 +469,13 @@
             }));
         }
 
+        var setLoaded = function(type) {
+            if (currentData == null && currentData.loadStatus != null) {
+                return;
+            }  
+            currentData.loadStatus[type] = true;
+        }
+
         // initialization
 
         // ensure the user is signed in
@@ -468,7 +484,7 @@
         else {
             var width = window.innerWidth;
             var height = window.innerHeight;
-            var force, visual, link, node, currentData, nodes;
+            var force, visual, link, node, currentData, nodes, links;
             var currentData = {};
 
             // updateVisual function for refreshing the d3 visual
@@ -480,9 +496,8 @@
                 data.y = height / 2;
                 data.py = height / 2;
                 data.radius = 30;
-                currentData = data;
                 nodes = flatten(data);
-                var links = computeLinks(nodes);
+                links = computeLinks(nodes);
         
                 //restart the force layout and update the links
                 force.linkDistance(function(d, i) {
@@ -643,43 +658,60 @@
 
             // set the root (top) node
             var setRootNode = function(node) {
-                // reset next links
-                vgeService.resetNextLinks();
 
-                // reset filters
-                for (var i = 0; i < $scope.typeColors.length; i++) {
-                    $scope.typeColors[i].show = false;
-                }
+                vgeService.wait(true);
 
-                var filters = [];
-                switch (node.type) {
-                    case 'me':
-                        filters.push('people');
-                    break;
-                    case 'groups':
-                        filters.push('members');
-                    break;
-                }
+                $timeout(function () {
+                    // reset next links
+                    vgeService.resetNextLinks();
 
-                // set node
-                currentData = node;
-
-                // toggle filters
-                for (var i = 0; i < filters.length; i++) {
-                    var filter = getFilter(filters[i]);
-                    if (filter == null) {
-                        throw 'invalid filter';
+                    // reset filters
+                    for (var i = 0; i < $scope.typeColors.length; i++) {
+                        $scope.typeColors[i].show = false;
                     }
-                    $scope.toggleFilter(filter, true);
-                }
 
-                // either have a filter update the view, or do it
-                // if none was requested
-                if (filters.length == 0) {
-                    // update the visual and stop spinner
-                    updateVisual(currentData);
-                    vgeService.wait(false);
-                }
+                    // set node
+                    currentData = node;
+                    $scope.type = node.type;
+
+                    var filters = [];
+                    switch (node.type) {
+                        case 'me':
+                        case 'people':
+                        case 'members':
+                            // get image on any "me" node, assumed to already be 
+                            // downloaded for the others
+                            if (node.type == 'me') {
+                                // get the photo for me
+                                vgeService.photo(currentData.id, "users", currentData).then(function(photoResults) {
+                                    setNodeImage(photoResults);
+                                });
+                            }
+                            
+                            filters.push('people');
+                        break;
+                        case 'groups':
+                            filters.push('members');
+                        break;
+                    }
+
+                    // toggle filters
+                    for (var i = 0; i < filters.length; i++) {
+                        var filter = getFilter(filters[i]);
+                        if (filter == null) {
+                            throw 'invalid filter';
+                        }
+                        $scope.toggleFilter(filter, true);
+                    }
+
+                    // either have a filter update the view, or do it
+                    // if none was requested
+                    if (filters.length == 0) {
+                        // update the visual and stop spinner
+                        updateVisual(currentData);
+                        vgeService.wait(false);
+                    }
+                });
             }
 
             // initialize force
@@ -703,11 +735,6 @@
             vgeService.me().then(function(meResults) {
                 var newNode = createNode(meResults.id, meResults.displayName, 'me', '/images/01me.png', meResults);
                 setRootNode(newNode)
-        
-                // get the photo for me
-                vgeService.photo(meResults.id, "users", currentData).then(function(photoResults) {
-                    setNodeImage(photoResults);
-                });
             });
         }
     }]);

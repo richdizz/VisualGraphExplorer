@@ -91,7 +91,7 @@
             var deferred = $q.defer();
         
             vgeService.kurve.getAccessTokenForScopesAsync(appConfig.scopes).then(function(token) {
-                $http.get("https://graph.microsoft.com/beta/users/" + id + "/people", { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
+                $http.get("https://graph.microsoft.com/beta/users/" + id + "/people?$filter=personType%20eq%20'Person'", { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
                     deferred.resolve(result.data);
                 }, function (err) {
                     deferred.reject(err);
