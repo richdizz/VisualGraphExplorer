@@ -152,6 +152,12 @@
                                 addNodes('people', peopleResults);
                             });
                             break;
+                        case "members":
+                            // query for members
+                            vgeService.members(currentData.id).then(function(memberResult) {
+                                addNodes('members', memberResult);
+                            });
+                            break;
                         case "directs":
                             // query for directs
                             vgeService.directs(currentData.id).then(function(directResult) {
@@ -263,7 +269,7 @@
         }
 
         // add nodes from a response
-        var addNodes = function (types, result) {
+        var addNodes = function (type, result) {
             if (result == null || result.length == 0) {
                 // update the visual and stop spinner
                 updateVisual(currentData);
@@ -273,7 +279,7 @@
                 return;
             }
 
-            switch (types) {
+            switch (type) {
                 case 'groups':
                     for (var i = 0; i < result.value.length; i++) {
                         var newNode = createNode(result.value[i].id, result.value[i].name, 'groups', '/images/02groups.png', result.value[i]);
@@ -299,13 +305,13 @@
                     setMore('groups', vgeService.groupsNextLink != null);
                 break;
                 case 'people':
-                    // add the people as children of root
+                case 'members':
                     for (var i = 0; i < result.value.length; i++) {
                         if (result.value[i].id == currentData.id) {
                             continue;
                         }
 
-                        var newNode = createNode(result.value[i].id, result.value[i].name, 'people', '/images/03people.png', result.value[i]);
+                        var newNode = createNode(result.value[i].id, result.value[i].name, type, '/images/03people.png', result.value[i]);
                         currentData.children.push(newNode);
 
                         // get photo for the user
@@ -635,31 +641,44 @@
                     .attr("cy", function(d) { return d.y; });
             };
 
-            // sets the root (top) node
+            // set the root (top) node
             var setRootNode = function(node) {
                 // reset next links
                 vgeService.resetNextLinks();
 
-                currentData = node;
+                // reset filters
+                for (var i = 0; i < $scope.typeColors.length; i++) {
+                    $scope.typeColors[i].show = false;
+                }
 
                 var filters = [];
                 switch (node.type) {
                     case 'me':
                         filters.push('people');
                     break;
-                    case 'group':
+                    case 'groups':
                         filters.push('members');
                     break;
                 }
 
+                // set node
+                currentData = node;
+
                 // toggle filters
-                $scope.toggleFilter(getFilter('people'), true);
                 for (var i = 0; i < filters.length; i++) {
                     var filter = getFilter(filters[i]);
                     if (filter == null) {
                         throw 'invalid filter';
                     }
                     $scope.toggleFilter(filter, true);
+                }
+
+                // either have a filter update the view, or do it
+                // if none was requested
+                if (filters.length == 0) {
+                    // update the visual and stop spinner
+                    updateVisual(currentData);
+                    vgeService.wait(false);
                 }
             }
 

@@ -103,6 +103,23 @@
             return deferred.promise;
         };
 
+        // members
+        vgeService.members = function(id) {
+            var deferred = $q.defer();
+        
+            vgeService.kurve.getAccessTokenForScopesAsync(appConfig.scopes).then(function(token) {
+                $http.get("https://graph.microsoft.com/beta/groups/" + id + "/members", { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
+                    deferred.resolve(result.data);
+                }, function (err) {
+                    deferred.reject(err);
+                });
+            }, function(err) {
+                deferred.reject(err);
+            });
+        
+            return deferred.promise;
+        };
+
         // initial groups
         vgeService.groups = function(id) {
             return vgeService.getGroups("https://graph.microsoft.com/beta/users/" + id + "/memberOf/$/microsoft.graph.group?$filter=groupTypes/any(a:a%20eq%20'unified')");
