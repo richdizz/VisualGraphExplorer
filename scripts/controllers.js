@@ -23,11 +23,9 @@
         }
     }])
     .controller("visualCtrl", ["$scope", "$location", "vgeService", '$timeout', function($scope, $location, vgeService, $timeout) {
-        // scope
+        // scope variables
         $scope.json = {};
-
         $scope.type = "me";
-
         $scope.typeColors = [
             { type: "me", text: "Me", color: "#e81224", show: true, enabled: false, pic: "/images/01me.png", more: false, types: ["me"] },
             { type: "groups", text: "Groups", color: "#f7630c", show: false, enabled: true, pic: "/images/02groups.png", more: false, types: ["me", "people", "members"] },
@@ -45,16 +43,16 @@
             { type: "plans", text: "Plans", color: "#e3008c", show: false, enabled: true, pic: "/images/12plans.png", more: false, types: ["me", "people", "members"] }
             ///MORE HERE
         ];
-
         $scope.showDetails = true;
-
         $scope.showFilters = false;
 
+        // toggle the menu
         $scope.toggleMenu = function(option) {
             $scope.showDetails = (option == "details");
             $scope.showFilters = (option == "filters");
         };
 
+        // get more data
         $scope.toggleMore = function(filterItem) {
             // start the spinner
             vgeService.wait(true);
@@ -99,6 +97,7 @@
             }
         };
 
+        // show or hide data
         $scope.toggleFilter = function(filterItem, force) {
             // check if force is requested
             force = force || false;
@@ -258,6 +257,15 @@
                 }
             }
         };
+
+        // initialize visualization
+        $scope.reset = function () {
+            vgeService.wait(true);
+            vgeService.me().then(function(meResults) {
+                var newNode = createNode(meResults.id, meResults.displayName, 'me', '/images/01me.png', meResults);
+                setRootNode(newNode)
+            });
+        }
 
         // get a filter
         var getFilter = function(type) {
@@ -513,10 +521,11 @@
         }
 
         // initialization
-
-        // ensure the user is signed in
         if (!vgeService.kurve.isLoggedIn())
+        {
+            // ensure the user is signed in
             $location.path("/login");
+        }
         else {
             var width = window.innerWidth;
             var height = window.innerHeight;
@@ -766,11 +775,7 @@
             force.size([width, height]);
 
             // initialize visual using the graph getting ME
-            vgeService.wait(true);
-            vgeService.me().then(function(meResults) {
-                var newNode = createNode(meResults.id, meResults.displayName, 'me', '/images/01me.png', meResults);
-                setRootNode(newNode)
-            });
+            $scope.reset();
         }
     }]);
 })();

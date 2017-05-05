@@ -14,6 +14,9 @@
             <div class="switchContainer"><switch ng-model="item.show" ng-style="{ 'border-color' : item.color, 'background': (item.show) ? item.color : '#fff' }" ng-change="toggleFilter(item)"></switch></div>
             <div class="textContainer linkLabel" ng-show="item.more" ng-click="toggleMore(item)">Get more</div>
         </div>
+        <div class="filterItem">
+            <div class="textContainer linkLabel" ng-click="reset()">Start over</div>
+        </div>
     </div>
 </div>
 <div id="legend">
