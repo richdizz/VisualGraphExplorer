@@ -23,9 +23,6 @@
         }
     }])
     .controller("visualCtrl", ["$scope", "$location", "vgeService", function($scope, $location, vgeService) {
-        // private variables
-        var currentData = {};
-        
         // scope
         $scope.json = {};
 
@@ -304,6 +301,10 @@
                 case 'people':
                     // add the people as children of root
                     for (var i = 0; i < result.value.length; i++) {
+                        if (result.value[i].id == currentData.id) {
+                            continue;
+                        }
+
                         var newNode = createNode(result.value[i].id, result.value[i].name, 'people', '/images/03people.png', result.value[i]);
                         currentData.children.push(newNode);
 
@@ -462,6 +463,7 @@
             var width = window.innerWidth;
             var height = window.innerHeight;
             var force, visual, link, node, currentData, nodes;
+            var currentData = {};
 
             // updateVisual function for refreshing the d3 visual
             var updateVisual = function(data) {
@@ -533,7 +535,10 @@
                         //prevent while dragging
                         if (d3.event.defaultPrevented) return true;
 
-                        //TODO: handle click event
+                        // set this node to the new root node
+                        if (currentData.id != d.id) {
+                            setRootNode(d);
+                        }
                     })
                     .on('mouseover', function(d, i) {
                         //prevent while dragging
@@ -632,6 +637,9 @@
 
             // sets the root (top) node
             var setRootNode = function(node) {
+                // reset next links
+                vgeService.resetNextLinks();
+
                 currentData = node;
 
                 var filters = [];
