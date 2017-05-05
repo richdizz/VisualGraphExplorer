@@ -23,7 +23,7 @@
         }
     }])
     .controller("visualCtrl", ["$scope", "$location", "vgeService", function($scope, $location, vgeService) {
-        $scope.json = {'name': 'Richard'};
+        $scope.json = {};
         $scope.typeColors = [
             { type: "me", text: "Me", color: "#e81224", show: true, enabled: false, pic: "/images/01me.png", more: false },
             { type: "groups", text: "Groups", color: "#f7630c", show: false, enabled: true, pic: "/images/02groups.png", more: false },
