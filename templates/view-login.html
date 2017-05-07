@@ -1,7 +1,13 @@
-<div class="loginContainer">
-    <div class="loginModal">
-        <p>Please sign-in with Office 365 to visualize your data and relationships.</p>
-        <button ng-click="login()">Sign-in with Office 365</button>
+<div class="dialog-container">
+    <div id="login-dialog" class="ms-Dialog ms-Dialog--blocking ms-u-slideUpIn10">
+        <div class="ms-Dialog-title">Sign-in with Office 365</div>
+        <div class="ms-Dialog-content">
+            <p class="ms-Dialog-subText">You need to sign-in with an Office 365 account to visualize your data and relationships.</p>
+        </div>
+        <div class="ms-Dialog-actions">
+            <button class="ms-Button ms-Button--primary" ng-click="login()">
+        <span class="ms-Button-label">Sign-in</span> 
+        </button>
+        </div>
     </div>
-    <div class="loginMask"></div>
 </div>

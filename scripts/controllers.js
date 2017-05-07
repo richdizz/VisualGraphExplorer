@@ -1,17 +1,46 @@
 (function() {
     angular.module("vge.controllers", [])
     .controller("appCtrl", ["$scope", function($scope) {
+        // private variables
+        var waitDialog = null;
+        var spinner = null;
+
+        // scope variables
         $scope.showSpinner = false;
 
-        //listen spinner toggles
+        // listen spinner toggles
         $scope.$on("wait", function (evt, val) {
             $scope.showSpinner = val;
+
+            // initialize the wait dialog if needed
+            if (waitDialog == null) {
+                // initialize dialog
+                var waitDialogElement = document.querySelector("#wait-dialog");
+                waitDialog = new fabric['Dialog'](waitDialogElement);
+                waitDialog.open();
+
+                // initialize spinners
+                var spinnerElement = document.querySelector(".ms-Spinner");
+                spinner = new fabric['Spinner'](spinnerElement);
+            }
+
+            if (val) {
+                spinner.start();
+            }
+            else {
+                spinner.stop();
+            }
         });
     }])
     .controller("loginCtrl", ["$scope", "$location", "vgeService", function($scope, $location, vgeService) {
         if (vgeService.kurve.isLoggedIn())
             $location.path("/visual");
         else {
+            // show the login prompt
+            var dialog = document.querySelector("#login-dialog");
+            var dialogComponent = new fabric['Dialog'](dialog);
+            dialogComponent.open();
+
             // login function for signing user in and redirecting to visual
             $scope.login = function() {
                 vgeService.signIn().then(function() {
@@ -31,12 +60,12 @@
             { type: "groups", text: "Groups", color: "#f7630c", show: false, enabled: true, pic: "/images/02groups.png", more: false, types: ["me", "people", "members"] },
             { type: "people", text: "People", color: "#ffb900", show: false, enabled: true, pic: "/images/03people.png", more: false, types: ["me", "people", "members"] },
             { type: "members", text: "Members", color: "#ffb900", show: true, enabled: true, pic: "/images/03people.png", more: false, types: ["groups"] },
-            { type: "directs", text: "Direct Reports", color: "#fce100", show: false, enabled: true, pic: "/images/04directs.png", more: false, types: ["me", "people", "members"] },
+            { type: "directs", text: "Direct reports", color: "#fce100", show: false, enabled: true, pic: "/images/04directs.png", more: false, types: ["me", "people", "members"] },
             { type: "manager", text: "Manager", color: "#bad80a", show: false, enabled: true, pic: "/images/05manager.png", more: false, types: ["me", "people", "members"] },
             { type: "files", text: "Files", color: "#16c60c", show: false, enabled: true, pic: "/images/06files.png", more: false, types: ["me", "groups", "people", "members"] },
             { type: "trending", text: "Trending", color: "#00b7c3", show: false, enabled: true, pic: "/images/07trending.png", more: false, types: ["me", "people", "members"] },
             { type: "messages", text: "Messages", color: "#0078d7", show: false, enabled: true, pic: "/images/08messages.png", more: false, types: ["me", "people", "members"] },
-            { type: "conversations", text: "Conversations", color: "#0078d7", show: false, enabled: true, pic: "/images/08messages.png", more: false, types: ["groups"] },
+            { type: "conversations", text: "Conversations", color: "#0078d7", show: false, enabled: true, pic: "/images/08conversations.png", more: false, types: ["groups"] },
             { type: "events", text: "Events", color: "#4f4bd9", show: false, enabled: true, pic: "/images/09events.png", more: false, types: ["me", "people", "members"] },
             { type: "contacts", text: "Contacts", color: "#744da9", show: false, enabled: true, pic: "/images/10contacts.png", more: false, types: ["me", "people", "members"] },
             { type: "notes", text: "Notes", color: "#881798", show: false, enabled: true, pic: "/images/11notes.png", more: false, types: ["me", "people", "members"] },
@@ -99,6 +128,8 @@
 
         // show or hide data
         $scope.toggleFilter = function(filterItem, force) {
+            filterItem.show = !filterItem.show;
+
             // check if force is requested
             force = force || false;
             if (force) {
@@ -267,6 +298,11 @@
             });
         }
 
+        // shows the GitHub repository
+        $scope.toggleInfo = function () {
+            window.open('https://github.com/richdizz/VisualGraphExplorer');
+        }
+
         // get a filter
         var getFilter = function(type) {
             for (var i = 0; i < $scope.typeColors.length; i++) {
@@ -426,7 +462,7 @@
                 break;
                 case 'conversations': 
                     for (var i = 0; i < result.value.length; i++) {
-                        var newNode = createNode(result.value[i].id, result.value[i].name, 'conversations', '/images/08messages.png', result.value[i]);
+                        var newNode = createNode(result.value[i].id, result.value[i].name, 'conversations', '/images/08conversations.png', result.value[i]);
                         currentData.children.push(newNode);
                     }
                 break;
@@ -528,7 +564,7 @@
         }
         else {
             var width = window.innerWidth - 320; // account for menu width
-            var height = window.innerHeight;
+            var height = window.innerHeight - 50; // account for header height
             var force, visual, link, node, currentData, nodes, links;
             var currentData = {};
 
@@ -712,6 +748,7 @@
                     // reset filters
                     for (var i = 0; i < $scope.typeColors.length; i++) {
                         $scope.typeColors[i].show = false;
+                        $scope.typeColors[i].more = false;
                     }
 
                     // set node

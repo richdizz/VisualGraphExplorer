@@ -1,41 +1,45 @@
 body {
-    color: #fff;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /*color: #fff;
+    background-color: #212121;*/
+    color: #333;
+    background-color: #f4f4f4;
     overflow: hidden;
 }
 
 #header {
-    position: absolute;
-    height: 39px;
-    left: 0px;
-    right: 0px;
-    top: 0px;
-    background-color: #111;
-    border-bottom: 1px solid #BAD80A;
+    color: #f4f4f4;
+    background-color: #000;
+    height: 50px;
+    left: 0;
+    padding: 0 8px;
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 100%;
+    z-index: 600;
 }
 
-#header .icon {
-    width: 24px;
-    height: 24px;
-    display: block;
-    background-color: #BAD80A;
-    margin: 7px;
-    float: left;
+#header-label {
+    margin-top: 10px;
+    margin-left: 5px;
 }
 
-#header h1 {
-    font-size: 20px;
-    margin-top: 6px;
-    margin-left: 2px;
-    float: left;
+/* dialogs */
+#login-dialog {
+    left: calc(50% - 388px / 2) !important;
+    top: calc(50% - 200px / 2 + 50px) !important;
+}
+
+#wait-dialog {
+    left: calc(50% - 268px / 2) !important;
+    top: calc(50% - 136px / 2 + 50px) !important;
 }
 
 #divCanvas {
     position: absolute;
-    background-color: #333;
     left: 0px;
     right: 0px;
-    top: 40px;
+    top: 50px;
     bottom: 0px;
     z-index: 500;
 }
@@ -47,15 +51,6 @@ body {
     top: 0px;
     bottom: 0px;
     z-index: 1000;
-}
-
-.spinnerContent {
-    position: absolute;
-    width: 100px;
-    text-align: center;
-    top: 50%;
-    left: 50%;
-    margin-left: -50px;
 }
 
 .spinnerMask {
@@ -74,73 +69,35 @@ body {
     right: 0;
     top: 0px;
     bottom: 0px;
-    background: #111;
-    -webkit-transition: right .5s; /* Safari */
-    transition: right .5s;
+    background: #fefefe;
+    box-shadow: 0 0 5px 0 rgba(0,0,0,.4);
 }
 
-#menuTabs {
-    position: absolute;
-    left: 0px;
-    right: 0px;
-    top: 0px;
-    height: 40px;
+#menu-side-commands {
+    padding-right: 0px !important;
+    min-width: 0px !important;
 }
 
-.menuTab {
-    width: 159px;
-    height: 29px;
-    background-color: #111;
-    float: left;
-    text-align: center;
-    padding-top: 10px;
-    border-left: 1px solid #BAD80A;
-    border-bottom: 1px solid #BAD80A;
-    cursor: pointer;
+.ms-CommandButton+.ms-CommandButton {
+    margin-left: 0px !important;
 }
 
-#menuTabs .menuTab:last-child {
-    width: 158px;
-    border-right: 1px solid #BAD80A;
-}
-
-.menuTab.selected {
-    background-color: #222;
-    border-bottom: 1px solid #222;
-}
-
-.tabContent {
-    position: absolute;
-    width: 298px;
-    top: 40px;
-    bottom: 0px;
-    left: 0px;
-    right: 0px;
-    background: #222;
+#menu-content {
     padding: 10px;
-    border-left: 1px solid #BAD80A;
-    border-right: 1px solid #BAD80A;
 }
 
-#jsonWindow {
-    position: absolute;
-    top: 10px;
-    bottom: 10px;
-    left: 10px;
-    right: 10px;
-    background: #ddd;
-    padding: 5px;
-    overflow: hidden;
+.load-more-label {
+    cursor: pointer;
 }
 
 #legend {
     position: absolute;
-    left: 20px;
+    left: 22px;
     width: 150px;
-    top: 50px;
-    background-color: #111;
-    border: 1px solid #BAD80A;
-    padding: 10px;
+    top: 25px;
+    box-shadow: 0 0 5px 0 rgba(0,0,0,.4);
+    background-color: #fefefe;
+    padding: 10px 15px;
 }
 
 #legend H2 {
@@ -160,110 +117,11 @@ body {
     float: left;
     width: 18px;
     height: 18px;
+    border-radius: 50%;
 }
 
 .legendItem .legendItemText {
     float: left;
     width: 112px;
     padding-left: 10px;
-}
-
-.switch {
-  /* frame */
-  width: 42px;
-  height: 20px;
-  border-radius: 10px;
-}
-.switch small {
-  /* button */
-  height: 18px;
-  width: 18px;
-  border: 1px solid #666
-}
-.switch.checked {
-  /* frame when enabled */
-  border-color: #fff;
-}
-.switch.checked small {
-  /* button when enabled */
-  left: 22px;
-}
-
-#menuContent h2 {
-    font-size: 18px;
-    margin-top: 4px;
-    margin-bottom: 4px;
-}
-
-.filterItem {
-    width: 100%;
-    float: left;
-    padding-top: 4px;
-    padding-bottom: 4px;
-    font-size: 14px;
-}
-
-.switchContainer {
-    float: left;
-    width: 70px;
-    display: block;
-}
-
-.textContainer {
-    float: left;
-    padding-left: 10px;
-    width: 210px;
-    display: block;
-}
-
-.loginContainer {
-    position: absolute;
-    z-index: 1100;
-    left: 0px;
-    right: 0px;
-    top: 0px;
-    bottom: 0px;
-}
-
-.loginContainer .loginModal {
-    position: absolute;
-    z-index: 1200;
-    width: 320px;
-    height: 130px;
-    top: 50%;
-    left: 50%;
-    margin-left: -160px;
-    margin-top: -65px;
-    border: 1px solid #BAD80A;
-    background: #333;
-    padding-left: 10px;
-    padding-right: 10px;
-}
-
-.loginContainer .loginModal button {
-    width: 100%;
-    border-radius: 0px;
-    padding: 10px;
-    font-size: 14px;
-    background-color: #BAD80A;
-    color: #fff;
-    border: 1px solid #fff;
-}
-
-.loginContainer .loginMask {
-    position: absolute;
-    z-index: 1100;
-    left: 0px;
-    right: 0px;
-    top: 0px;
-    bottom: 0px;
-    background: #000;
-    opacity: 0.5;
-}
-
-.linkLabel {
-    cursor: pointer;
-    font-weight: bold;
-    margin-bottom: 5px;
-    margin-top: -5px;
 }

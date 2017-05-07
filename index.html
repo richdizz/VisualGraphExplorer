@@ -1,22 +1,36 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="vge.app">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Visual Graph Explorer</title>
-    <link rel="stylesheet" href="node_modules/angular-ui-switch/angular-ui-switch.css"/>
-    <link rel="stylesheet" href="styles/app.css"/>
-    <link rel="stylesheet" href="node_modules/jsonformatter/dist/json-formatter.min.css"/>
+    <link rel="stylesheet" href="node_modules/angular-ui-switch/angular-ui-switch.css" />
+    <link rel="stylesheet" href="styles/app.css" />
+    <link rel="stylesheet" href="node_modules/jsonformatter/dist/json-formatter.min.css" />
+    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.min.css"/>
+    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.components.min.css"/>
 </head>
+
 <body>
     <div class="spinner" ng-controller="appCtrl" ng-show="showSpinner">
-        <div class="spinnerContent">spinner here</div>
         <div class="spinnerMask"></div>
+        <div class="dialog-container">
+            <div id="wait-dialog" class="ms-Dialog ms-Dialog--blocking ms-u-slideUpIn10">
+                <div class="ms-Dialog-title">Please wait</div>
+                <div class="ms-Dialog-content">
+                    <div class="ms-Spinner ms-Spinner--large">
+                        <div class="ms-Spinner-label">
+                            Loading...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div id="header">
-        <div class="icon"></div>
-        <h1>Visual Graph Explorer</h1>
+        <h1 id="header-label" class="ms-font-xl">Visual Graph Explorer</h1>
     </div>
     <div id="divCanvas" ng-view></div>
     <script src="node_modules/kurvejs/dist/kurve.js"></script>
@@ -25,9 +39,11 @@
     <script src="node_modules/angular-ui-switch/angular-ui-switch.js"></script>
     <script src="node_modules/jsonformatter/dist/json-formatter.min.js"></script>
     <script src="node_modules/d3/d3.min.js"></script>
-    
+    <script src="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/js/fabric.min.js"></script>
+
     <script src="scripts/services.js"></script>
     <script src="scripts/controllers.js"></script>
     <script src="scripts/app.js"></script>
 </body>
+
 </html>
