@@ -50,10 +50,12 @@
                 </div>
             </div>
             <div ng-repeat="item in typeColors | nodeFilters:type" class="filterItem">
-                <div class="ms-CheckBox" ng-click="toggleFilter(item)">
-                    <input tabindex="-1" type="checkbox" class="ms-CheckBox-input">
-                    <label role="checkbox" class="ms-CheckBox-field" tabindex="0" aria-checked="true" name="checkboxc" ng-class="{ 'is-checked': item.show }">
-                        <span class="ms-Label">{{item.text}}</span> 
+                <div class="ms-Toggle" ng-click="toggleFilter(item);$event.preventDefault()">
+                    <span class="ms-Toggle-description ng-binding">{{item.text}}</span> 
+                    <input type="checkbox" id="demo-toggle-3" class="ms-Toggle-input ng-pristine ng-untouched ng-valid ng-empty">
+                    <label  ng-style="{ 'border-color' : item.show ? item.color : '#333', 'background-color' : item.show ? item.color : '#fff' }"  class="ms-Toggle-field" tabindex="0" ng-class="{ 'is-selected': item.show }">
+                        <span class="ms-Label ms-Label--off">Off</span> 
+                        <span class="ms-Label ms-Label--on">On</span> 
                     </label>
                 </div>
                 <label class="ms-Label" ng-show="item.more">

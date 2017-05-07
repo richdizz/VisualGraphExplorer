@@ -84,10 +84,21 @@ body {
 
 #menu-content {
     padding: 10px;
+    height: calc(100% - 50px);
+    overflow-y: auto;
+}
+
+#menu .ms-Toggle {
+    margin-bottom: 0px !important;
+    margin-top: 10px !important;
 }
 
 .load-more-label {
     cursor: pointer;
+}
+
+#filters {
+    margin-bottom: 10px;
 }
 
 #legend {
