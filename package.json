@@ -12,7 +12,7 @@
     "angular": "1.6.4",
     "angular-route": "1.6.4",
     "angular-ui-switch": "0.1.1",
-    "d3": "3.5.3",
+    "d3": "3.5.4",
     "kurvejs": "0.6.1",
     "jsonformatter": "0.6.0"
   },
