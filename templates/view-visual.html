@@ -1,6 +1,14 @@
 <div id="menu">
     <div class="ms-CommandBar ms-CommandBar--navBar">
         <div id="menu-side-commands" class="ms-CommandBar-sideCommands">
+            <div class="ms-CommandButton ms-CommandButton--noLabel" ng-click="back()" ng-show="canGoBack">
+                <button class="ms-CommandButton-button">
+                    <span class="ms-CommandButton-icon ms-fontColor-themePrimary">
+                        <i class="ms-Icon ms-Icon--Reply"></i>
+                    </span> 
+                    <span class="ms-CommandButton-label"></span> 
+                </button>
+            </div>
             <div class="ms-CommandButton ms-CommandButton--noLabel" ng-click="reset()">
                 <button class="ms-CommandButton-button">
                     <span class="ms-CommandButton-icon ms-fontColor-themePrimary">
@@ -21,12 +29,12 @@
         <div class="ms-CommandBar-mainArea">
             <div class="ms-CommandButton ms-CommandButton--pivot" ng-class="{ 'is-active': showDetails }" ng-click="toggleMenu('details')">
                 <a class="ms-CommandButton-button">
-                    <span class="ms-CommandButton-label">Object details</span>
+                    <span class="ms-CommandButton-label">Details</span>
                 </a>
             </div>
             <div class="ms-CommandButton ms-CommandButton--pivot" ng-class="{ 'is-active': showFilters }" ng-click="toggleMenu('filters')">
                 <a class="ms-CommandButton-button">
-                    <span class="ms-CommandButton-label">Filter options</span>
+                    <span class="ms-CommandButton-label">Filters </span>
                 </a>
             </div>
         </div>
@@ -50,19 +58,10 @@
                 </div>
             </div>
             <div ng-repeat="item in typeColors | nodeFilters:type" class="filterItem">
-                <div class="ms-Toggle" ng-click="toggleFilter(item);$event.preventDefault()">
-                    <span class="ms-Toggle-description ng-binding">{{item.text}}</span> 
-                    <input type="checkbox" id="demo-toggle-3" class="ms-Toggle-input ng-pristine ng-untouched ng-valid ng-empty">
-                    <label  ng-style="{ 'border-color' : item.show ? item.color : '#333', 'background-color' : item.show ? item.color : '#fff' }"  class="ms-Toggle-field" tabindex="0" ng-class="{ 'is-selected': item.show }">
-                        <span class="ms-Label ms-Label--off">Off</span> 
-                        <span class="ms-Label ms-Label--on">On</span> 
-                    </label>
+                <div class="textContainer">
+                    <span class="ms-Toggle-description ng-binding ms-font-s-plus">{{item.text}} <span ng-show="item.more">(<button class="link" ng-click="toggleMore(item)">show more</button>)</span></span>
                 </div>
-                <label class="ms-Label" ng-show="item.more">
-                    <span>There is more data available,</span>
-                    <span class="load-more-label ms-fontColor-themePrimary" ng-click="toggleMore(item)">click here</span>
-                    <span>if you would like to load it.</span>
-                </label>
+                <div class="switchContainer"><switch ng-model="item.show" ng-style="{ 'border-color' : item.color, 'background': (item.show) ? item.color : '#fff' }" ng-change="toggleFilter(item)"></switch></div>
             </div>
         </div>
     </div>

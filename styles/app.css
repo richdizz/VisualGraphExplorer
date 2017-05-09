@@ -136,3 +136,51 @@ body {
     width: 112px;
     padding-left: 10px;
 }
+
+.switch {
+  /* frame */
+  width: 42px;
+  height: 20px;
+  border-radius: 10px;
+}
+.switch small {
+  /* button */
+  height: 18px;
+  width: 18px;
+  border: 1px solid #666
+}
+.switch.checked {
+  /* frame when enabled */
+  border-color: #fff;
+}
+.switch.checked small {
+  /* button when enabled */
+  left: 22px;
+}
+
+.switchContainer {
+    float: left;
+    width: 60px;
+    display: block;
+}
+
+.textContainer {
+    float: left;
+    padding-left: 10px;
+    width: 220px;
+    display: block;
+}
+
+.link {
+    color: blue !important;
+    background:none!important;
+    color:inherit;
+    border:none; 
+    padding:0!important;
+    font: inherit;
+    cursor: pointer;
+}
+
+.link:hover {
+    text-decoration: underline;
+}

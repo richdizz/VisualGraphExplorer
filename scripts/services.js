@@ -106,7 +106,24 @@
         
             vgeService.kurve.getAccessTokenForScopesAsync(appConfig.scopes).then(function(token) {
                 $http.get(url, { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
-                    vgeService.peopleNextLink = null;
+                    vgeService.peopleNextLink = result.data['@odata.nextLink'];
+                    deferred.resolve(result.data);
+                }, function (err) {
+                    deferred.reject(err);
+                });
+            }, function(err) {
+                deferred.reject(err);
+            });
+        
+            return deferred.promise;
+        };
+
+        // get specific person
+        vgeService.getUser = function(id) {
+            var deferred = $q.defer();
+        
+            vgeService.kurve.getAccessTokenForScopesAsync(appConfig.scopes).then(function(token) {
+                $http.get("https://graph.microsoft.com/v1.0/users/" + id, { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
                     deferred.resolve(result.data);
                 }, function (err) {
                     deferred.reject(err);
@@ -201,6 +218,22 @@
             return deferred.promise;
         };
 
+        vgeService.getFileByPath = function(url) {
+            var deferred = $q.defer();
+        
+            vgeService.kurve.getAccessTokenForScopesAsync(appConfig.scopes).then(function(token) {
+                $http.get(url, { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
+                    deferred.resolve(result);
+                }, function (err) {
+                    deferred.reject(err);
+                });
+            }, function(err) {
+                deferred.reject(err);
+            });
+        
+            return deferred.promise;
+        };
+
         // thumbnail
         vgeService.thumbnail = function(userid, path, node) {
             var deferred = $q.defer();
@@ -211,6 +244,26 @@
                         deferred.resolve({ pic: result.data.value[0].small.url, node: node });
                     else
                         deferred.resolve({ pic: "", node: node });
+                }, function (err) {
+                    deferred.reject(err);
+                });
+            }, function(err) {
+                deferred.reject(err);
+            });
+        
+            return deferred.promise;
+        };
+
+        // thumbnailTrending
+        vgeService.thumbnailTrending = function(path, node) {
+            var deferred = $q.defer();
+        
+            vgeService.kurve.getAccessTokenForScopesAsync(appConfig.scopes).then(function(token) {
+                $http.get(path, { headers:  { "Authorization": "Bearer " + token } }).then(function(result) {
+                    if (result.data.value.length > 0)
+                        deferred.resolve({ pic: result.data.value[0].small.url, node: node });
+                    else
+                        deferred.reject();
                 }, function (err) {
                     deferred.reject(err);
                 });
