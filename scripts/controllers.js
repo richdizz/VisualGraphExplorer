@@ -321,7 +321,7 @@
                                     // get the photo for the user
                                     vgeService.photo(newNode.objid, "users", newNode).then(function(photoResults) {
                                         setNodeImage(photoResults);
-                                    });
+                                    }, function(err) {  });
                                 }, function () {
                                     vgeService.wait(false);
                                 });
@@ -336,7 +336,7 @@
                                     // get the photo for the user
                                     vgeService.photo(newNode.objid, "users", newNode).then(function(photoResults) {
                                         setNodeImage(photoResults);
-                                    });
+                                    }, function(err) {  });
                                 }, function () {
                                     vgeService.wait(false);
                                 });
@@ -392,7 +392,7 @@
                     // get photo for the user
                     vgeService.photo(meResults.id, "users", newNode).then(function(photoResults) {
                         setNodeImage(photoResults);
-                    });
+                    }, function(err) {  });
                 });
             }
 
@@ -482,7 +482,7 @@
                             // get the photo for the group
                             vgeService.photo(newNode.objid, "groups", newNode).then(function(photoResults) {
                                 setNodeImage(photoResults);
-                            });
+                            }, function(err) {  });
                         }
 
                         // update the 'get more' label
@@ -501,7 +501,7 @@
                             // get photo for the user
                             vgeService.photo(result.value[i].id, "users", newNode).then(function(photoResults) {
                                 setNodeImage(photoResults);
-                            });
+                            }, function(err) {  });
                         }
 
                         // update the 'get more' label
@@ -517,7 +517,7 @@
                             // get photo for the user
                             vgeService.photo(result.value[i].id, "users", newNode).then(function(photoResults) {
                                 setNodeImage(photoResults);
-                            });
+                            }, function(err) {  });
                         }
                     break;
                     case 'manager':
@@ -527,7 +527,7 @@
                         // get photo for the user
                         vgeService.photo(result.id, "users", newNode).then(function(photoResults) {
                             setNodeImage(photoResults);
-                        });
+                        }, function(err) {  });
                     break;
                     case 'trending':
                         for (var i = 0; i < result.value.length; i++) {
@@ -542,7 +542,7 @@
                                 url = "https://graph.microsoft.com/beta" + url; //add graph to front
                                 vgeService.thumbnailTrending(url, newNode).then(function(photoResults) {
                                     setNodeImage(photoResults);
-                                });
+                                }, function(err) {  });
                             }
                         }
                     break;
@@ -556,7 +556,7 @@
                             if (result.value[i].file) {
                                 vgeService.thumbnail(currentData.objid, "drive/items/" + newNode.objid + "/thumbnails", newNode).then(function(photoResults) {
                                     setNodeImage(photoResults);
-                                });
+                                }, function(err) {  });
                             }
                         }
 
@@ -772,6 +772,11 @@
                         //prevent while dragging
                         if (d3.event.defaultPrevented) return true;
 
+                        // switch to detail view
+                        $scope.showDetails = true;
+                        $scope.showFilters = false;
+
+                        // show the json
                         $scope.json = d.obj;
                         $scope.$apply();
                     })
